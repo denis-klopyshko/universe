@@ -6,6 +6,7 @@ import com.universe.exception.ConflictException;
 import com.universe.exception.ResourceNotFoundException;
 import com.universe.mapping.CourseMapper;
 import com.universe.repository.CourseRepository;
+import com.universe.rest.filter.CourseFilter;
 import com.universe.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,8 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.universe.repository.CourseRepository.Specs.byStudentId;
+
 @Service
 @Slf4j
 @Validated
@@ -29,18 +32,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CourseDto> findAll(Pageable pageable) {
-        return courseRepo.findAll(pageable)
+    public Page<CourseDto> findAll(CourseFilter courseFilter, Pageable pageable) {
+        return courseRepo.findAll(courseFilter.toSpec(), pageable)
                 .map(MAPPER::mapToDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CourseDto> findAllByStudentId(Long studentId) {
-        return courseRepo.findAllByStudentId(studentId)
-                .stream()
-                .map(MAPPER::mapToDto)
-                .collect(Collectors.toList());
     }
 
     @Override

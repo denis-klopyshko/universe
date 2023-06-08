@@ -22,16 +22,19 @@ public class LessonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
+    @ToString.Exclude
     private CourseEntity course;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private ProfessorEntity professor;
 
-    @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    @ToString.Exclude
     private RoomEntity room;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "lessons")

@@ -11,6 +11,7 @@ import com.universe.mapping.StudentMapper;
 import com.universe.repository.CourseRepository;
 import com.universe.repository.GroupRepository;
 import com.universe.repository.StudentRepository;
+import com.universe.repository.UserRepository;
 import com.universe.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,8 @@ import static java.lang.String.format;
 public class StudentServiceImpl implements StudentService {
     private static final StudentMapper MAPPER = StudentMapper.INSTANCE;
     private final StudentRepository studentRepo;
+
+    private final UserRepository userRepository;
 
     private final GroupRepository groupRepo;
 
@@ -65,7 +68,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDto create(StudentDto studentDto) {
-        validateStudentExistsByEmail(studentDto.getEmail());
+        validateUserExistsByEmail(studentDto.getEmail());
         log.info("Creating student: {}", studentDto);
         var studentEntity = MAPPER.mapBaseAttributes(studentDto);
         setStudentGroup(studentEntity, studentDto.getGroup());
@@ -83,7 +86,7 @@ public class StudentServiceImpl implements StudentService {
     public StudentDto update(Long id, StudentDto studentDto) {
         log.info("Updating student with ID [{}]. Payload: {}", id, studentDto);
         var studentEntity = findStudentEntity(id);
-        validateStudentExistsByEmail(studentDto.getEmail());
+        validateUserExistsByEmail(studentDto.getEmail());
         setStudentGroup(studentEntity, studentDto.getGroup());
 
         MAPPER.updateStudentFromDto(studentDto, studentEntity);
@@ -166,10 +169,10 @@ public class StudentServiceImpl implements StudentService {
                 );
     }
 
-    private void validateStudentExistsByEmail(String email) {
-        studentRepo.findByEmail(email)
+    private void validateUserExistsByEmail(String email) {
+        userRepository.findByEmail(email)
                 .ifPresent(cp -> {
-                    throw new ConflictException(format("Student with email: %s already exists!", email));
+                    throw new ConflictException(format("User with email: %s already exists!", email));
                 });
     }
 

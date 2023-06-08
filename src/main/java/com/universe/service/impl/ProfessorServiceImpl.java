@@ -5,6 +5,7 @@ import com.universe.entity.ProfessorEntity;
 import com.universe.exception.ResourceNotFoundException;
 import com.universe.mapping.ProfessorMapper;
 import com.universe.repository.ProfessorRepository;
+import com.universe.repository.UserRepository;
 import com.universe.service.ProfessorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,8 @@ public class ProfessorServiceImpl implements ProfessorService {
     private static final ProfessorMapper MAPPER = ProfessorMapper.INSTANCE;
     private final ProfessorRepository professorRepo;
 
+    private final UserRepository userRepository;
+
     @Override
     @Transactional(readOnly = true)
     public Page<ProfessorDto> findAll(Pageable pageable) {
@@ -33,7 +36,16 @@ public class ProfessorServiceImpl implements ProfessorService {
 
     @Override
     public ProfessorDto create(ProfessorDto professorDto) {
-        return null;
+        log.info("Creating professor: {}", professorDto);
+        var professorEntity = MAPPER.mapBaseAttributes(professorDto);
+        var createdProfessor = professorRepo.save(professorEntity);
+
+//        if (!professorDto.getCourses().isEmpty()) {
+//            professorDto.getCourses()
+//                    .forEach(courseDto -> assignProfessorOnCourse(createdProfessor, courseDto.getId()));
+//        }
+
+        return MAPPER.mapToDto(createdProfessor);
     }
 
     @Override

@@ -1,17 +1,15 @@
 package com.universe.service;
 
 import com.universe.dto.course.CourseDto;
+import com.universe.rest.filter.CourseFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 public interface CourseService {
-    Page<CourseDto> findAll(Pageable pageable);
-
-    List<CourseDto> findAllByStudentId(@NotNull Long studentId);
+    Page<CourseDto> findAll(CourseFilter courseFilter, Pageable pageable);
 
     CourseDto create(@Valid @NotNull CourseDto courseDto);
 

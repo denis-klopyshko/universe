@@ -28,7 +28,7 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long>, J
     static class Specs {
         public static Specification<StudentEntity> withGroupId(Long groupId) {
             return ((root, query, cb) ->
-                    cb.equal(root.get(StudentEntity_.GROUP).get(GroupEntity_.ID), groupId));
+                    cb.equal(root.join(StudentEntity_.GROUP).get(GroupEntity_.ID), groupId));
         }
     }
 }

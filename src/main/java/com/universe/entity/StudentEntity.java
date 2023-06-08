@@ -15,11 +15,7 @@ import java.util.List;
 @ToString
 @DiscriminatorValue("student")
 public class StudentEntity extends UserEntity {
-
-    @Column(name = "user_type", insertable = false, updatable = false)
-    private String userType;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     @ToString.Exclude
     private GroupEntity group;

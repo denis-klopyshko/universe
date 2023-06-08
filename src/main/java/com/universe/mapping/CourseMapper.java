@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mapper(uses = {StudentShortMapper.class},
+@Mapper(uses = {StudentShortMapper.class, ProfessorShortMapper.class},
         injectionStrategy = InjectionStrategy.CONSTRUCTOR,
         collectionMappingStrategy = CollectionMappingStrategy.TARGET_IMMUTABLE
 )

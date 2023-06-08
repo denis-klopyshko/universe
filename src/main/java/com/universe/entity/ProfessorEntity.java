@@ -12,11 +12,9 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@ToString
 @DiscriminatorValue("professor")
 public class ProfessorEntity extends UserEntity {
-    @Column(name = "user_type", insertable = false, updatable = false)
-    private String userType;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_courses",

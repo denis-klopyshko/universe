@@ -1,14 +1,37 @@
+-- Insert test data into groups table
 INSERT INTO groups (group_name)
-VALUES ('GR-1'),
-       ('GR-2'),
-       ('GR-3'),
-       ('GR-4'),
-       ('GR-5'),
-       ('GR-6'),
-       ('GR-7'),
-       ('GR-8'),
-       ('GR-9'),
-       ('GR-10');
+VALUES ('Group A'),
+       ('Group B'),
+       ('Group C'),
+       ('Group D'),
+       ('Group E');
+
+-- Insert test data into users table
+INSERT INTO users (first_name, last_name, email, group_id, user_type)
+VALUES ('John', 'Doe', 'john.doe@example.com', 1, 'Student'),
+       ('Jane', 'Smith', 'jane.smith@example.com', null, 'Teacher'),
+       ('Bob', 'Johnson', 'bob.johnson@example.com', 1, 'Student'),
+       ('Alice', 'Brown', 'alice.brown@example.com', 3, 'Student'),
+       ('Michael', 'Wilson', 'michael.wilson@example.com', null, 'Teacher'),
+       ('Emily', 'Taylor', 'emily.taylor@example.com', 2, 'Student'),
+       ('David', 'Anderson', 'david.anderson@example.com', 5, 'Student'),
+       ('Sarah', 'Clark', 'sarah.clark@example.com', null, 'Teacher'),
+       ('Daniel', 'Walker', 'daniel.walker@example.com', 3, 'Student'),
+       ('Olivia', 'Harris', 'olivia.harris@example.com', 4, 'Student'),
+       ('James', 'Lewis', 'james.lewis@example.com', null, 'Teacher'),
+       ('Sophia', 'Martin', 'sophia.martin@example.com', 4, 'Student'),
+       ('William', 'Lee', 'william.lee@example.com', 2, 'Student'),
+       ('Emma', 'Hall', 'emma.hall@example.com', null, 'Teacher'),
+       ('Ryan', 'Green', 'ryan.green@example.com', 5, 'Student'),
+       ('Grace', 'Adams', 'grace.adams@example.com', 1, 'Student'),
+       ('Andrew', 'Baker', 'andrew.baker@example.com', null, 'Teacher'),
+       ('Mia', 'Turner', 'mia.turner@example.com', 2, 'Student'),
+       ('Benjamin', 'Parker', 'benjamin.parker@example.com', 3, 'Student'),
+       ('Ava', 'Young', 'ava.young@example.com', null, 'Teacher'),
+       ('Henry', 'Kelly', 'henry.kelly@example.com', 4, 'Student'),
+       ('Elizabeth', 'Campbell', 'elizabeth.campbell@example.com', 4, 'Student'),
+       ('Christopher', 'Mitchell', 'christopher.mitchell@example.com', null, 'Teacher'),
+       ('Abigail', 'Price', 'abigail.price@example.com', 1, 'Student');
 
 INSERT INTO rooms (room_code)
 VALUES ('R101'),
@@ -22,30 +45,14 @@ VALUES ('R101'),
        ('R109'),
        ('R110');
 
-INSERT INTO users (first_name, last_name, email, group_id, user_type)
-VALUES ('Maison', 'Moses', 'Maison.Moses@test.com', 1, 'student'),
-       ('Nieve', 'Brady', 'Nieve.Brady@test.com', 2, 'student'),
-       ('Jana', 'Guerra', 'Jana.Guerra@test.com', 3, 'student'),
-       ('Stanley', 'Decker', 'Stanley.Decker@test.com', 4, 'student'),
-       ('Aleksander', 'Fitzpatrick', 'Aleksander.Fitzpatrick@test.com', 5, 'student'),
-       ('Aryan', 'Stephens', 'Aryan.Stephens@test.com', 5, 'student'),
-       ('Alicia', 'Bloggs', 'Alicia.Bloggs@test.com', 2, 'student'),
-       ('John', 'Doe', 'john.doe@test.com', null, 'professor'),
-       ('Damien', 'Callahan', 'Damien.Callahan@test.com', null, 'professor'),
-       ('Jayden', 'Larson', 'Jayden.Larson@test.com', null, 'professor'),
-       ('Irvin', 'Arias', 'Irvin.Arias@test.com', null, 'professor'),
-       ('Michael', 'Blankenship', 'Michael.Blankenship@test.com', null, 'professor'),
-       ('Jeffrey', 'Meyers', 'Jeffrey.Meyers@test.com', null, 'professor'),
-       ('Christen', 'Goodwin', 'Christen.Goodwin@test.com', null, 'professor');
-
-INSERT INTO courses (course_name, course_description, user_id)
-VALUES ('Math', 'Math Description', 8),
-       ('Biology', 'Biology Description', 9),
-       ('Programming', 'Programming Description', 10),
-       ('System Design', 'System Design Description', 11),
-       ('Philosophy', 'Philosophy Description', 12),
-       ('Game Design', 'Game Design Description', 13),
-       ('Software Testing', 'Software Testing Description', 14);
+INSERT INTO courses (course_name, course_description)
+VALUES ('Math', 'Math Description'),
+       ('Biology', 'Biology Description'),
+       ('Programming', 'Programming Description'),
+       ('System Design', 'System Design Description'),
+       ('Philosophy', 'Philosophy Description'),
+       ('Game Design', 'Game Design Description'),
+       ('Software Testing', 'Software Testing Description');
 
 INSERT INTO users_courses (user_id, course_id)
 VALUES (1, 1),
@@ -67,7 +74,8 @@ VALUES (1, 1),
        (1, 4),
        (2, 1),
        (2, 6),
-       (6, 2);
+       (6, 2),
+       (8, 2);
 
 INSERT INTO lessons (course_id, user_id, room_id, day_of_week, week_number, lesson_order, lesson_type)
 VALUES (1, 8, 1, 'TUESDAY', 13, 1, 'LECTURE'),

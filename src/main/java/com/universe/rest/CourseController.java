@@ -1,7 +1,9 @@
 package com.universe.rest;
 
 import com.universe.dto.course.CourseDto;
+import com.universe.dto.professor.ProfessorShortDto;
 import com.universe.dto.student.StudentShortDto;
+import com.universe.rest.filter.CourseFilter;
 import com.universe.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,8 +20,8 @@ public class CourseController {
     private final CourseService courseService;
 
     @GetMapping
-    public Page<CourseDto> findAll(Pageable pageable) {
-        return courseService.findAll(pageable);
+    public Page<CourseDto> findAll(CourseFilter filter, Pageable pageable) {
+        return courseService.findAll(filter, pageable);
     }
 
     @GetMapping("/{id}")
@@ -31,6 +33,12 @@ public class CourseController {
     public List<StudentShortDto> getStudentsByCourseId(@PathVariable Long id) {
         var course = courseService.findOne(id);
         return course.getStudents();
+    }
+
+    @GetMapping("/{id}/professors")
+    public List<ProfessorShortDto> getProfessorsByCourseId(@PathVariable Long id) {
+        var course = courseService.findOne(id);
+        return course.getProfessors();
     }
 
     @PostMapping
