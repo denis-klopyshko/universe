@@ -13,12 +13,8 @@ public interface ProfessorMapper {
 
     ProfessorDto mapToDto(ProfessorEntity professor);
 
-    ProfessorEntity mapToEntity(ProfessorDto professorDto);
-
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "courses", ignore = true)
     ProfessorEntity mapBaseAttributes(ProfessorDto professorDto);
 
-    @Mapping(target = "courses", ignore = true)
     void updateProfessorFromDto(ProfessorDto professorDto, @MappingTarget ProfessorEntity professor);
 }

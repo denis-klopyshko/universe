@@ -33,6 +33,9 @@ public class LessonController {
 
     @PutMapping("/{id}")
     public LessonDto update(@PathVariable Long id, @RequestBody LessonDto lessonDto) {
+        if (!id.equals(lessonDto.getId())) {
+            throw new IllegalStateException("ID in path and body does not match!");
+        }
         return lessonService.update(id, lessonDto);
     }
 

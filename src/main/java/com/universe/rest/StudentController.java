@@ -38,6 +38,9 @@ public class StudentController {
 
     @PutMapping("/{id}")
     public StudentDto update(@PathVariable Long id, @RequestBody StudentDto studentDto) {
+        if (!id.equals(studentDto.getId())) {
+            throw new IllegalStateException("ID in path and body does not match!");
+        }
         return studentService.update(id, studentDto);
     }
 

@@ -1,8 +1,6 @@
 package com.universe.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -10,6 +8,9 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "rooms")
 public class RoomEntity {
     @Id

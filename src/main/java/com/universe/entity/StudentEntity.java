@@ -1,9 +1,7 @@
 package com.universe.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,6 +11,9 @@ import java.util.List;
 @Setter
 @Entity
 @ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @DiscriminatorValue("student")
 public class StudentEntity extends UserEntity {
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,15 +31,6 @@ public class StudentEntity extends UserEntity {
     @ToString.Exclude
     private List<CourseEntity> courses = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "users_lessons",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "lesson_id"))
-    @Builder.Default
-    @ToString.Exclude
-    private List<LessonEntity> lessons = new ArrayList<>();
-
     public void addCourse(CourseEntity course) {
         this.courses.add(course);
         course.getStudents().add(this);
@@ -49,13 +41,16 @@ public class StudentEntity extends UserEntity {
         course.getStudents().remove(this);
     }
 
-    public void addLesson(LessonEntity lessonEntity) {
-        this.lessons.add(lessonEntity);
-        lessonEntity.getStudents().add(this);
+    public void addToGroup(GroupEntity group) {
+        this.resetGroup();
+        this.group = group;
+        group.getStudents().add(this);
     }
 
-    public void removeLesson(LessonEntity lessonEntity) {
-        this.lessons.remove(lessonEntity);
-        lessonEntity.getStudents().remove(this);
+    public void resetGroup() {
+        if (this.group != null) {
+            this.group.getStudents().remove(this);
+            this.group = null;
+        }
     }
 }

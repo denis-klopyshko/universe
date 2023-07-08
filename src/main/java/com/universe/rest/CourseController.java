@@ -1,7 +1,6 @@
 package com.universe.rest;
 
 import com.universe.dto.course.CourseDto;
-import com.universe.dto.professor.ProfessorShortDto;
 import com.universe.dto.student.StudentShortDto;
 import com.universe.rest.filter.CourseFilter;
 import com.universe.service.CourseService;
@@ -35,11 +34,6 @@ public class CourseController {
         return course.getStudents();
     }
 
-    @GetMapping("/{id}/professors")
-    public List<ProfessorShortDto> getProfessorsByCourseId(@PathVariable Long id) {
-        var course = courseService.findOne(id);
-        return course.getProfessors();
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -49,6 +43,9 @@ public class CourseController {
 
     @PutMapping("/{id}")
     public CourseDto update(@PathVariable Long id, @RequestBody CourseDto courseDto) {
+        if (!id.equals(courseDto.getId())) {
+            throw new IllegalStateException("ID in path and body does not match!");
+        }
         return courseService.update(id, courseDto);
     }
 

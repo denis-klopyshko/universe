@@ -32,6 +32,9 @@ public class ProfessorController {
 
     @PutMapping("/{id}")
     public ProfessorDto update(@PathVariable Long id, @RequestBody ProfessorDto professorDto) {
+        if (!id.equals(professorDto.getId())) {
+            throw new IllegalStateException("ID in path and body does not match!");
+        }
         return professorService.update(id, professorDto);
     }
 

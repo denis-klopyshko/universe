@@ -1,20 +1,18 @@
 package com.universe.entity;
 
 import com.universe.enums.LessonType;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
 @ToString
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "lessons")
 public class LessonEntity {
     @Id
@@ -28,7 +26,7 @@ public class LessonEntity {
     private CourseEntity course;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "professor_id")
     @ToString.Exclude
     private ProfessorEntity professor;
 
@@ -37,10 +35,10 @@ public class LessonEntity {
     @ToString.Exclude
     private RoomEntity room;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "lessons")
-    @Builder.Default
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
     @ToString.Exclude
-    private List<StudentEntity> students = new ArrayList<>();
+    private GroupEntity group;
 
     @Column(name = "lesson_order", nullable = false)
     private Integer order;

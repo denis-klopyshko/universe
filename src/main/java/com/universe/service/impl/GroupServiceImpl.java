@@ -75,16 +75,17 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void delete(Long groupId) {
         log.info("Deleting group with ID: {}", groupId);
-        findGroupEntity(groupId);
-        validateNoAssignedStudents(groupId);
+        var groupEntity = findGroupEntity(groupId);
+        validateNoAssignedStudents(groupEntity);
+        validateNoAssignedLessons(groupEntity);
+
         groupRepo.deleteById(groupId);
     }
 
     private void validateNameIsUnique(String name) {
-        groupRepo.findByName(name)
-                .ifPresent(cp -> {
-                    throw new ConflictException(String.format("Group with name '%s' already exists!", name));
-                });
+        if (groupRepo.existsByName(name)) {
+            throw new ConflictException(String.format("Group with name '%s' already exists!", name));
+        }
     }
 
     private GroupEntity findGroupEntity(Long id) {
@@ -94,12 +95,17 @@ public class GroupServiceImpl implements GroupService {
                 );
     }
 
-    private void validateNoAssignedStudents(Long groupId) {
-        var group = findGroupEntity(groupId);
-        if (!group.getStudents().isEmpty()) {
+    private void validateNoAssignedStudents(GroupEntity groupEntity) {
+        if (!groupEntity.getStudents().isEmpty()) {
             throw new RelationRemovalException(
-                    String.format("Can't delete group with assigned students! Students: %s", group.getStudents())
+                    String.format("Can't delete group with assigned students! Students: %s", groupEntity.getStudents())
             );
+        }
+    }
+
+    private void validateNoAssignedLessons(GroupEntity groupEntity) {
+        if (!groupEntity.getLessons().isEmpty()) {
+            throw new RelationRemovalException("Can't delete group. Group has assigned lessons!");
         }
     }
 }

@@ -1,12 +1,12 @@
 package com.universe.dto.lesson;
 
 import com.universe.dto.RoomDto;
+import com.universe.dto.group.GroupShortDto;
 import com.universe.enums.LessonType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 @Data
 @Builder
@@ -19,6 +19,8 @@ public class LessonShortDto {
 
     private String professorFullName;
 
+    private GroupShortDto group;
+
     private RoomDto room;
 
     private Integer order;
@@ -27,5 +29,5 @@ public class LessonShortDto {
 
     private Integer weekNumber;
 
-    private Integer dayOfWeek;
+    private String dayOfWeek;
 }

@@ -40,6 +40,9 @@ public class RoomController {
 
     @PutMapping("/{id}")
     public RoomDto update(@PathVariable Long id, @RequestBody RoomDto roomDto) {
+        if (!id.equals(roomDto.getId())) {
+            throw new IllegalStateException("ID in path and body does not match!");
+        }
         return roomService.update(id, roomDto);
     }
 

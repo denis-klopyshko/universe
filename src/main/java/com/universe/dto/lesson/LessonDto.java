@@ -2,8 +2,8 @@ package com.universe.dto.lesson;
 
 import com.universe.dto.RoomDto;
 import com.universe.dto.course.CourseShortDto;
+import com.universe.dto.group.GroupShortDto;
 import com.universe.dto.professor.ProfessorShortDto;
-import com.universe.dto.student.StudentShortDto;
 import com.universe.enums.LessonType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +13,7 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.DayOfWeek;
 
 @Data
 @Builder
@@ -33,9 +32,11 @@ public class LessonDto {
 
     @NotNull
     @Valid
-    private RoomDto room;
+    private GroupShortDto group;
 
-    private List<@NotNull @Valid StudentShortDto> students = new ArrayList<>();
+    @NotNull
+    @Valid
+    private RoomDto room;
 
     @NotNull
     @Range(min = 1, max = 7, message = "Lesson order should be from 1 to 7.")
@@ -49,6 +50,5 @@ public class LessonDto {
     private Integer weekNumber;
 
     @NotNull
-    @Range(min = 1, max = 7, message = "dayOfWeek should be between 1 and 7.")
-    private Integer dayOfWeek;
+    private DayOfWeek dayOfWeek;
 }

@@ -12,10 +12,13 @@ import org.mapstruct.factory.Mappers;
 public interface GroupMapper {
     GroupMapper INSTANCE = Mappers.getMapper(GroupMapper.class);
 
-    @Mapping(target = "studentsQuantity", expression = "java(groupEntity.getStudents().size())")
     GroupDto mapToDto(GroupEntity groupEntity);
 
+    @Mapping(target = "students", ignore = true)
+    @Mapping(target = "lessons", ignore = true)
     GroupEntity mapToEntity(GroupDto groupDto);
 
+    @Mapping(target = "students", ignore = true)
+    @Mapping(target = "lessons", ignore = true)
     void updateGroupFromDto(GroupDto groupDto, @MappingTarget GroupEntity groupEntity);
 }

@@ -13,4 +13,6 @@ public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
     Optional<RoomEntity> findByCode(String code);
 
     Page<RoomEntity> findAll(Pageable pageable);
+
+    boolean existsByCode(String code);
 }

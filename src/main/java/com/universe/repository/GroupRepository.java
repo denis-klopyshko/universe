@@ -13,8 +13,11 @@ import java.util.Optional;
 @Repository
 public interface GroupRepository extends JpaRepository<GroupEntity, Long> {
     Page<GroupEntity> findAll(Pageable pageable);
+
     Optional<GroupEntity> findByName(String name);
 
     @Query("select g from GroupEntity g where size(g.students)<= ?1")
     List<GroupEntity> findAllByStudentsIsLessThanOrEqual(int studentLimit);
+
+    boolean existsByName(String name);
 }

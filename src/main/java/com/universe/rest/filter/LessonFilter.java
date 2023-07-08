@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.DayOfWeek;
 import java.util.Objects;
 
 import static com.universe.repository.LessonRepository.Specs.*;
@@ -21,13 +22,10 @@ public class LessonFilter {
 
     private Long professorId;
 
-    private Long studentId;
-
-    private Long roomCode;
+    private String roomCode;
     @Range(min = 1, max = 45, message = "Week Number should be between 1 and 45.")
     private Integer weekNumber;
-    @Range(min = 1, max = 7, message = "dayOfWeek should be between 1 and 7.")
-    private Integer dayOfWeek;
+    private DayOfWeek dayOfWeek;
 
     private LessonType lessonType;
 
@@ -42,9 +40,10 @@ public class LessonFilter {
             spec = spec.and(byDayOfWeek(dayOfWeek));
         } else if (Objects.nonNull(courseName)) {
             spec = spec.and(byCourseName(courseName));
-        } else if (Objects.nonNull(studentId)) {
-            spec = spec.and(byStudentId(studentId));
+        } else if (Objects.nonNull(roomCode)) {
+            spec = spec.and(byRoomCode(roomCode));
         }
+
         return spec;
     }
 }

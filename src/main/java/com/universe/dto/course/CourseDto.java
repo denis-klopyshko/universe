@@ -1,6 +1,5 @@
 package com.universe.dto.course;
 
-import com.universe.dto.professor.ProfessorShortDto;
 import com.universe.dto.student.StudentShortDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,9 +26,6 @@ public class CourseDto {
     @NotBlank
     @Size(max = 255)
     private String description;
-
-    @Builder.Default
-    private List<@NotNull ProfessorShortDto> professors = new ArrayList<>();
 
     @Builder.Default
     private List<@NotNull StudentShortDto> students = new ArrayList<>();

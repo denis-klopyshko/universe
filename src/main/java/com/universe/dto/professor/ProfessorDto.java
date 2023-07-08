@@ -31,7 +31,4 @@ public class ProfessorDto {
     @Email(message = "Email not valid.")
     @NotNull
     private String email;
-
-    @Builder.Default
-    private List<@NotNull CourseShortDto> courses = new ArrayList<>();
 }

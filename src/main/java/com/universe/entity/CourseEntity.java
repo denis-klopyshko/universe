@@ -1,9 +1,6 @@
 package com.universe.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -14,6 +11,9 @@ import java.util.List;
 @Setter
 @Entity
 @ToString
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "courses")
 public class CourseEntity {
     @Id
@@ -26,12 +26,6 @@ public class CourseEntity {
 
     @Column(name = "course_description", nullable = false)
     private String description;
-
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "courses")
-    @Where(clause = "user_type='professor'")
-    @Builder.Default
-    @ToString.Exclude
-    private List<ProfessorEntity> professors = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "courses")
     @Where(clause = "user_type='student'")

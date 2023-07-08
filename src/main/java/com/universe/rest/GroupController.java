@@ -39,6 +39,9 @@ public class GroupController {
 
     @PutMapping("/{id}")
     public GroupDto update(@PathVariable Long id, @RequestBody GroupDto groupDto) {
+        if (!id.equals(groupDto.getId())) {
+            throw new IllegalStateException("ID in path and body does not match!");
+        }
         return groupService.update(id, groupDto);
     }
 

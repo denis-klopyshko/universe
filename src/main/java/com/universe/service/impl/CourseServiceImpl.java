@@ -6,6 +6,7 @@ import com.universe.exception.ConflictException;
 import com.universe.exception.ResourceNotFoundException;
 import com.universe.mapping.CourseMapper;
 import com.universe.repository.CourseRepository;
+import com.universe.repository.LessonRepository;
 import com.universe.rest.filter.CourseFilter;
 import com.universe.service.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.universe.repository.CourseRepository.Specs.byStudentId;
+import static com.universe.repository.LessonRepository.Specs.byCourseId;
 
 @Service
 @Slf4j
@@ -29,6 +27,7 @@ import static com.universe.repository.CourseRepository.Specs.byStudentId;
 public class CourseServiceImpl implements CourseService {
     private static final CourseMapper MAPPER = CourseMapper.INSTANCE;
     private final CourseRepository courseRepo;
+    private final LessonRepository lessonRepo;
 
     @Override
     @Transactional(readOnly = true)
@@ -69,14 +68,18 @@ public class CourseServiceImpl implements CourseService {
     public void delete(Long courseId) {
         log.info("Deleting course with ID [{}]", courseId);
         findCourseEntity(courseId);
+        var courseLessons = lessonRepo.findAll(byCourseId(courseId));
+        if (!courseLessons.isEmpty()) {
+            throw new ConflictException("Can't delete course. Course has assigned lessons!");
+        }
+
         courseRepo.deleteById(courseId);
     }
 
     private void validateNameIsUnique(String name) {
-        courseRepo.findByName(name)
-                .ifPresent(cp -> {
-                    throw new ConflictException(String.format("Course with name '%s' already exists!", name));
-                });
+       if(courseRepo.existsByName(name)) {
+           throw new ConflictException(String.format("Course with name '%s' already exists!", name));
+       }
     }
 
     private CourseEntity findCourseEntity(Long id) {

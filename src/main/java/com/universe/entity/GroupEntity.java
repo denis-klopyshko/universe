@@ -1,7 +1,6 @@
 package com.universe.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -10,6 +9,9 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "groups")
 public class GroupEntity {
     @Id
@@ -21,15 +23,10 @@ public class GroupEntity {
     private String name;
 
     @OneToMany(mappedBy = "group")
+    @Builder.Default
     private List<StudentEntity> students = new ArrayList<>();
 
-    public void addStudent(StudentEntity studentEntity) {
-        this.students.add(studentEntity);
-        studentEntity.setGroup(this);
-    }
-
-    public void removeStudent(StudentEntity studentEntity) {
-        this.students.remove(studentEntity);
-        studentEntity.setGroup(null);
-    }
+    @OneToMany(mappedBy = "group")
+    @Builder.Default
+    private List<LessonEntity> lessons = new ArrayList<>();
 }

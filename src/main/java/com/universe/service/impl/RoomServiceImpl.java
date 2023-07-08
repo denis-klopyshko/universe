@@ -5,6 +5,7 @@ import com.universe.entity.RoomEntity;
 import com.universe.exception.ConflictException;
 import com.universe.exception.ResourceNotFoundException;
 import com.universe.mapping.RoomMapper;
+import com.universe.repository.LessonRepository;
 import com.universe.repository.RoomRepository;
 import com.universe.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import static com.universe.repository.LessonRepository.Specs.byRoomId;
+
 @Service
 @Slf4j
 @Validated
@@ -23,6 +26,8 @@ import org.springframework.validation.annotation.Validated;
 public class RoomServiceImpl implements RoomService {
     private static final RoomMapper MAPPER = RoomMapper.INSTANCE;
     private final RoomRepository roomRepo;
+
+    private final LessonRepository lessonRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -60,6 +65,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public RoomDto findByCode(String roomCode) {
         var roomEntity = roomRepo.findByCode(roomCode).orElseThrow(
                 () -> new ResourceNotFoundException(String.format("Room with code: %s not found!", roomCode))
@@ -69,6 +75,11 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void delete(Long roomId) {
+        var lessonsInRoom = lessonRepository.findAll(byRoomId(roomId));
+        if (!lessonsInRoom.isEmpty()) {
+            throw new ConflictException("Can't delete Room. Room has assigned lessons!");
+        }
+
         roomRepo.delete(findRoomEntityById(roomId));
     }
 
@@ -80,9 +91,8 @@ public class RoomServiceImpl implements RoomService {
     }
 
     private void validateCodeIsUnique(String code) {
-        roomRepo.findByCode(code)
-                .ifPresent(cp -> {
-                    throw new ConflictException(String.format("Room with code '%s' already exists!", code));
-                });
+        if (roomRepo.existsByCode(code)) {
+            throw new ConflictException(String.format("Room with code '%s' already exists!", code));
+        }
     }
 }
