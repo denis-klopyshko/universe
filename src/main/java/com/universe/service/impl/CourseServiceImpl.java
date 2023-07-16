@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.universe.repository.LessonRepository.Specs.byCourseId;
 
 @Service
@@ -28,6 +31,15 @@ public class CourseServiceImpl implements CourseService {
     private static final CourseMapper MAPPER = CourseMapper.INSTANCE;
     private final CourseRepository courseRepo;
     private final LessonRepository lessonRepo;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CourseDto> findAll() {
+        return courseRepo.findAll()
+                .stream()
+                .map(MAPPER::mapToDto)
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -77,9 +89,9 @@ public class CourseServiceImpl implements CourseService {
     }
 
     private void validateNameIsUnique(String name) {
-       if(courseRepo.existsByName(name)) {
-           throw new ConflictException(String.format("Course with name '%s' already exists!", name));
-       }
+        if (courseRepo.existsByName(name)) {
+            throw new ConflictException(String.format("Course with name '%s' already exists!", name));
+        }
     }
 
     private CourseEntity findCourseEntity(Long id) {

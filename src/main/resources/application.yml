@@ -1,4 +1,7 @@
 spring:
+  web:
+    resources:
+      static-locations: classpath:/resources/static/**
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:5432/${DB_NAME:universe}
     username: ${DB_USERNAME:postgres}
@@ -21,6 +24,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  thymeleaf:
+    cache: false
+    enabled: true
+    prefix: classpath:/templates/
+    suffix: .html
 server:
   error:
     include-message: always

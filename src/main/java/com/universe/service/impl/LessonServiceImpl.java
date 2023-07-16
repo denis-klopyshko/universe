@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Slf4j
 @Validated
@@ -33,6 +36,15 @@ public class LessonServiceImpl implements LessonService {
     private final GroupRepository groupRepo;
 
     private final RoomRepository roomRepo;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<LessonDto> findAll() {
+        return lessonRepo.findAll()
+                .stream()
+                .map(MAPPER::mapToDto)
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional(readOnly = true)

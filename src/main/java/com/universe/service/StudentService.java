@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface StudentService {
+    List<StudentDto> findAll();
     Page<StudentDto> findAll(Pageable pageable);
 
     Page<StudentDto> findAllByGroupId(@NotNull Long groupId, Pageable pageable);
@@ -21,7 +22,7 @@ public interface StudentService {
 
     StudentDto findOne(@NotNull Long id);
 
-    void delete(@NotNull Long courseId);
+    void delete(@NotNull Long studentId);
 
     void assignStudentOnCourse(@NotNull Long studentId, @NotNull Long courseId);
 
