@@ -17,7 +17,8 @@
             </div>
         </div>
     </div>
-    <table class="table">
+    <h3 th:if="${rooms.empty}" class="text-center">List is Empty</h3>
+    <table class="table" th:unless="${lessons.empty}" data-test="lessons-table">
         <thead>
         <tr>
             <th scope="col" style="width: 5%">ID</th>
@@ -32,7 +33,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="lesson : ${lessons}">
+        <tr th:each="lesson : ${lessons}" data-test="lesson-item-row">
             <th scope="row" th:text="${lesson.id}"></th>
             <td th:text="${lesson.group.name}"></td>
             <td th:text="${lesson.room.code}"></td>

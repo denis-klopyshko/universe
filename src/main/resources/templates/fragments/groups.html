@@ -17,7 +17,8 @@
             </div>
         </div>
     </div>
-    <table class="table" th:unless="${#lists.isEmpty(groups)}">
+    <h3 th:if="${groups.empty}" class="text-center">List is Empty</h3>
+    <table class="table" th:unless="${groups.empty}" data-test="groups-table">
         <thead>
         <tr>
             <th scope="col" style="width: 5%">ID</th>
@@ -27,7 +28,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="group : ${groups}">
+        <tr th:each="group : ${groups}" data-test="group-item-row">
             <th scope="row" th:text="${group.id}"></th>
             <td th:text="${group.name}"></td>
             <td th:text="${#lists.size(group.students)}"></td>
