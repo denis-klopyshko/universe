@@ -47,6 +47,14 @@ public class StudentServiceImpl implements StudentService {
     private final CourseRepository courseRepo;
 
     @Override
+    public List<StudentDto> findAll() {
+        return studentRepo.findAll()
+                .stream()
+                .map(MAPPER::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<StudentDto> findAll(Pageable pageable) {
         return studentRepo.findAll(pageable)

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" th:include="index :: index">
+<head>
+    <meta charset="UTF-8">
+    <title>Students</title>
+</head>
+<body>
+<div th:fragment="content" class="container-lg">
+    <div class="text-left mt-5 mb-5">
+        <div class="row">
+            <div class="col-sm-10 align-middle">
+                <h2>Students</h2>
+            </div>
+            <div class="col-sm-2 text-center align-self-center">
+                <a th:href="@{/students/create}" class="btn btn-secondary btn-success" tabindex="-1" role="button">Add
+                    Student</a>
+            </div>
+        </div>
+    </div>
+    <h3 th:if="${students.empty}" class="text-center">List is Empty</h3>
+    <table class="table" th:unless="${students.empty}" data-test="students-table">
+        <thead>
+        <tr>
+            <th scope="col" style="width: 5%">ID</th>
+            <th scope="col">Full Name</th>
+            <th scope="col">Group</th>
+            <th scope="col">Email</th>
+            <th scope="col">Courses</th>
+            <th scope="col" style="width: 10%">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student : ${students}" data-test="student-item-row">
+            <th scope="row" th:text="${student.id}"></th>
+            <td th:text="${student.firstName} + ' ' + ${student.lastName}"></td>
+            <td th:text="${student.group?.name}"></td>
+            <td th:text="${student.email}"></td>
+            <td th:text="${#strings.listJoin(student.courses.![name], ',')}"></td>
+            <td>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a th:href="@{/students/{id}/view(id=${student.id})}" class="btn btn-primary me-md-2 btn-sm"
+                       tabindex="-1"
+                       role="button">View</a>
+                    <a th:href="@{/students/{id}/edit(id=${student.id})}" class="btn btn-primary me-md-2 btn-sm"
+                       tabindex="-1"
+                       role="button">Edit</a>
+                    <a th:href="@{/students/{id}/delete(id=${student.id})}" class="btn btn-primary btn-sm"
+                       tabindex="-1"
+                       role="button">Delete</a>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="d-flex flex-row mb-1 justify-content-end">
+        <nav aria-label="pagination">
+            <ul class="pagination pagination-sm" th:if="${students.totalPages > 0}"
+                th:each="pageNumber : ${pageNumbers}">
+                <li th:classappend="${pageNumber==students.number + 1} ? active"
+                    class="page-item" aria-current="page">
+                    <a th:href="@{/students(size=${students.size}, page=${pageNumber})}"
+                       th:text="${pageNumber}"
+                       class="page-link"></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</body>
+</html>

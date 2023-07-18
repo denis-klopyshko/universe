@@ -7,8 +7,11 @@ import org.springframework.data.domain.Pageable;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public interface CourseService {
+    List<CourseDto> findAll();
+
     Page<CourseDto> findAll(CourseFilter courseFilter, Pageable pageable);
 
     CourseDto create(@Valid @NotNull CourseDto courseDto);
