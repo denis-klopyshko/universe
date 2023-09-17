@@ -12,6 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface GroupRepository extends JpaRepository<GroupEntity, Long> {
+
+    @Query("select g.name from GroupEntity g")
+    List<String> findAllGroupNames();
+
     Page<GroupEntity> findAll(Pageable pageable);
 
     Optional<GroupEntity> findByName(String name);

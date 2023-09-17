@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Text Inputs</title>
+</head>
+<body>
+
+<div class="text-center align-self-center" th:fragment="primaryButton(title, link)">
+    <a th:href="@{__${link}__}" class="btn btn-secondary btn-success" tabindex="-1" role="button" th:text="${title}">
+        Add Entity
+    </a>
+</div>
+
+</body>
+</html>

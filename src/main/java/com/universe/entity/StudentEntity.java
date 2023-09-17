@@ -6,6 +6,8 @@ import lombok.experimental.SuperBuilder;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -52,5 +54,17 @@ public class StudentEntity extends UserEntity {
             this.group.getStudents().remove(this);
             this.group = null;
         }
+    }
+
+    public StudentEntity(UserEntity user) {
+        super(user);
+        this.courses = new ArrayList<>();
+    }
+
+    public Set<String> getAssignedCourseNames() {
+        return this.getCourses()
+                .stream()
+                .map(CourseEntity::getName)
+                .collect(Collectors.toSet());
     }
 }

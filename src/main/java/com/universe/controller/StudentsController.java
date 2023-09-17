@@ -1,28 +1,46 @@
 package com.universe.controller;
 
 import com.universe.dto.student.StudentDto;
+import com.universe.dto.user.CreateUserForm;
+import com.universe.dto.user.UpdateUserForm;
+import com.universe.enums.UserType;
+import com.universe.repository.CourseRepository;
+import com.universe.repository.GroupRepository;
+import com.universe.repository.RoleRepository;
 import com.universe.service.StudentService;
+import com.universe.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 public class StudentsController {
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int DEFAULT_PAGE = 1;
 
+    private final UserService userService;
     private final StudentService studentService;
+    private final RoleRepository roleRepo;
+    private final CourseRepository courseRepo;
+    private final GroupRepository groupRepo;
 
+    @PreAuthorize("hasAnyAuthority('students::read', 'students::write')")
     @RequestMapping(value = "/students", method = RequestMethod.GET)
     public String getStudentsList(Model model,
                                   @RequestParam("page") Optional<Integer> page,
@@ -30,10 +48,11 @@ public class StudentsController {
         int currentPage = page.orElse(DEFAULT_PAGE);
         int pageSize = size.orElse(DEFAULT_PAGE_SIZE);
 
-        Page<StudentDto> studentsPage = studentService.findAll(PageRequest.of(currentPage - 1, pageSize));
+        Page<StudentDto> studentsPage = studentService.findAll(
+                PageRequest.of(currentPage - 1, pageSize, Sort.by(Sort.Direction.ASC, "id"))
+        );
         model.addAttribute("students", studentsPage);
-        model.addAttribute("content", "students");
-        System.out.println(studentsPage.getTotalElements());
+        model.addAttribute("content", "students/students-list");
 
         int totalPages = studentsPage.getTotalPages();
         if (totalPages > 0) {
@@ -46,38 +65,92 @@ public class StudentsController {
         return "index";
     }
 
-    @RequestMapping(value = "/students/create", method = RequestMethod.GET)
+    @PreAuthorize("hasAnyAuthority('students::write')")
+    @RequestMapping(value = "/students/new", method = RequestMethod.GET)
     public String getCreateStudentPage(Model model) {
-        model.addAttribute("content", "create-student");
+        var studentForm = new CreateUserForm();
+        model.addAttribute("roles", roleRepo.findAllRoleNames());
+        model.addAttribute("courses", courseRepo.findAllCourseNames());
+        model.addAttribute("userType", UserType.STUDENT);
+        model.addAttribute("groups", groupRepo.findAllGroupNames());
+        model.addAttribute("content", "students/create-student");
+
+        if (!model.containsAttribute("student")) {
+            model.addAttribute("student", studentForm);
+        }
+
         return "index";
     }
 
-    @RequestMapping(value = "/students/{id}/edit", method = RequestMethod.GET)
-    public String getStudentEditPage(@PathVariable("id") Long studentId, Model model) {
-        var student = studentService.findOne(studentId);
-        model.addAttribute("student", student);
-        model.addAttribute("content", "edit-student");
-        return "index";
-    }
+    @PreAuthorize("hasAnyAuthority('students::write')")
+    @RequestMapping(value = "/students", method = RequestMethod.POST)
+    public String createStudent(@Valid @ModelAttribute("student") CreateUserForm student,
+                                BindingResult result,
+                                RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.student", result);
+            redirectAttributes.addFlashAttribute("student", student);
+            return "redirect:/students/new";
+        }
 
-    @RequestMapping(value = "/students/{id}/view", method = RequestMethod.GET)
-    public String getStudentViewPage(@PathVariable("id") Long studentId, Model model) {
-        var student = studentService.findOne(studentId);
-        model.addAttribute("student", student);
-        model.addAttribute("content", "view-student");
-        return "index";
-    }
-
-    @RequestMapping(value = "/saveStudent", method = RequestMethod.POST)
-    public String saveStudent(@ModelAttribute StudentDto student, BindingResult errors, Model model) {
-        // logic to process input data
+        try {
+            userService.create(student);
+        } catch (Exception e) {
+            log.error("Error saving student: " + e.getLocalizedMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
+            redirectAttributes.addFlashAttribute("student", student);
+            return "redirect:/students/new";
+        }
 
         return "redirect:/students";
     }
 
+    @PreAuthorize("hasAnyAuthority('students::write')")
+    @RequestMapping(value = "/students/{id}/edit", method = RequestMethod.GET)
+    public String getUpdateStudentPage(Model model, @PathVariable("id") Long id) {
+        var student = userService.findOne(id);
+        var updateStudentForm = student.toUpdateForm();
+        model.addAttribute("roles", roleRepo.findAllRoleNames());
+        model.addAttribute("courses", courseRepo.findAllCourseNames());
+        model.addAttribute("userType", UserType.STUDENT);
+        model.addAttribute("groups", groupRepo.findAllGroupNames());
+        model.addAttribute("content", "students/edit-student");
+
+        if (!model.containsAttribute("student")) {
+            model.addAttribute("student", updateStudentForm);
+        }
+
+        return "index";
+    }
+
+    @PreAuthorize("hasAnyAuthority('students::write')")
+    @RequestMapping(value = "/students/{id}/edit", method = RequestMethod.POST)
+    public String updateStudent(@PathVariable("id") Long id,
+                                @Valid @ModelAttribute("student") UpdateUserForm student,
+                                BindingResult result,
+                                RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.student", result);
+            redirectAttributes.addFlashAttribute("student", student);
+            return "redirect:/students/{id}/edit";
+        }
+
+        try {
+            userService.update(id, student);
+        } catch (Exception e) {
+            log.error("Error updating student" + e.getLocalizedMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
+            redirectAttributes.addFlashAttribute("student", student);
+            return "redirect:/students/{id}/edit";
+        }
+
+        return "redirect:/students";
+    }
+
+    @PreAuthorize("hasAnyAuthority('students::write')")
     @RequestMapping(value = "/students/{id}/delete", method = RequestMethod.GET)
-    public String deleteStudent(@PathVariable Long id, Model model) {
-        studentService.delete(id);
+    public String deleteStudent(@PathVariable Long id) {
+        userService.delete(id);
         return "redirect:/students";
     }
 }

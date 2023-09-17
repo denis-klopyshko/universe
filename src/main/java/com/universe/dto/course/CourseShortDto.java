@@ -1,19 +1,26 @@
 package com.universe.dto.course;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
-@AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class CourseShortDto {
     @NotNull
     private Long id;
+
+    @NotNull
     private String name;
+
     private String description;
+
+    public CourseShortDto(Long id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
 }

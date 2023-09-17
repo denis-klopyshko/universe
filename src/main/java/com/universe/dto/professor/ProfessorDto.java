@@ -1,15 +1,13 @@
 package com.universe.dto.professor;
 
-import com.universe.dto.course.CourseShortDto;
+import com.universe.dto.RoleDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,4 +29,9 @@ public class ProfessorDto {
     @Email(message = "Email not valid.")
     @NotNull
     private String email;
+
+    @Builder.Default
+    @NotEmpty
+    @NotNull
+    private List<@NotNull @Valid RoleDto> roles = new ArrayList<>();
 }

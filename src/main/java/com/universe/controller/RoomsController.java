@@ -17,7 +17,7 @@ public class RoomsController {
     @GetMapping({"/rooms"})
     public String getRoomsList(Model model) {
         Pageable page = PageRequest.of(0, 20, Sort.by("id").ascending());
-        model.addAttribute("content", "rooms");
+        model.addAttribute("content", "rooms/rooms-list");
         model.addAttribute("rooms", roomService.findAll(page).getContent());
         return "index";
     }

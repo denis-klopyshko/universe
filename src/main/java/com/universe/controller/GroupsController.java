@@ -17,7 +17,7 @@ public class GroupsController {
     @GetMapping({"/groups"})
     public String getGroupsList(Model model) {
         Pageable page = PageRequest.of(0, 20, Sort.by("id").ascending());
-        model.addAttribute("content", "groups");
+        model.addAttribute("content", "groups/groups-list");
         model.addAttribute("groups", groupService.findAll(page).getContent());
         return "index";
     }

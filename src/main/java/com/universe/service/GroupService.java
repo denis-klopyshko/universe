@@ -11,6 +11,8 @@ import java.util.List;
 public interface GroupService {
     Page<GroupDto> findAll(Pageable pageable);
 
+    List<GroupDto> findAll();
+
     List<GroupDto> findAllWithLessOrEqualStudents(@NotNull Integer studentsQuantity);
 
     GroupDto create(@Valid @NotNull GroupDto groupDto);

@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class RoomControllerWebMvcTest {
     RoomService roomService;
 
     @Test
+    @WithMockUser
     void shouldDisplayRoomsList() throws Exception {
         when(roomService.findAll(any(PageRequest.class))).thenReturn(
                 new PageImpl<>(List.of(
@@ -36,7 +38,7 @@ public class RoomControllerWebMvcTest {
 
         mockMvc.perform(get("/rooms"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "rooms"))
+                .andExpect(model().attribute("content", "rooms/rooms-list"))
                 .andExpect(model().attributeExists("rooms"))
                 .andExpect(content().string(containsString("R-101")))
                 .andExpect(content().contentType("text/html;charset=UTF-8"))

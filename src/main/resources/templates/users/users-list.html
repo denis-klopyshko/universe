@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+<body>
+<div th:fragment="content" class="container-lg">
+    <div class="row text-left mt-5 mb-5">
+        <div class="col-sm-10 align-middle">
+            <h2>Users</h2>
+        </div>
+        <div class="col-sm-2">
+            <div th:replace="fragments/buttons :: primaryButton('Add User', '/users/new')"></div>
+        </div>
+    </div>
+    <h3 th:if="${users.empty}" class="text-center">List is Empty</h3>
+    <div class="table-responsive">
+        <table class="table table-bordered table-fixed" th:unless="${users.empty}">
+            <thead>
+            <tr>
+                <th scope="col" style="width: 5%">ID</th>
+                <th scope="col">Full Name</th>
+                <th scope="col" style="width: 5%">Group</th>
+                <th scope="col">Email</th>
+                <th scope="col">Courses</th>
+                <th scope="col">Roles</th>
+                <th scope="col" style="width: 6%">Status</th>
+                <th scope="col" style="width: 10%">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}" data-test="student-item-row">
+                <th scope="row" th:text="${user.id}"></th>
+                <td th:text="${user.firstName} + ' ' + ${user.lastName}" class="text-overflow-ellipsis"></td>
+                <td th:text="${user.group?.name}"></td>
+                <td th:text="${user.email}" class="text-overflow-ellipsis"></td>
+                <td th:text="${#strings.listJoin(user.courses.![name], ', ')}"
+                    th:title="${#strings.listJoin(user.courses.![name], ', ')}"
+                    class="text-overflow-ellipsis"></td>
+                <td th:text="${#strings.listJoin(user.roles.![name], ', ')}"
+                    th:title="${#strings.listJoin(user.roles.![name], ', ')}"
+                    class="text-overflow-ellipsis"></td>
+                <td>
+                <span class="badge"
+                      th:text="${user.enabled ? 'Active' : 'Disabled'}"
+                      th:classappend="${user.enabled ? 'text-bg-success' : 'text-bg-danger'}">
+                </span>
+                </td>
+                <td>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a th:href="@{/users/{id}/edit(id=${user.id})}" class="btn btn-primary me-md-2 btn-sm"
+                           tabindex="-1"
+                           role="button">Edit</a>
+                        <a th:href="@{/users/{id}/delete(id=${user.id})}" class="btn btn-primary btn-sm"
+                           tabindex="-1"
+                           role="button">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex flex-row mb-1 justify-content-end">
+        <nav aria-label="pagination">
+            <ul class="pagination pagination-sm" th:if="${users.totalPages > 0}"
+                th:each="pageNumber : ${pageNumbers}">
+                <li th:classappend="${pageNumber==users.number + 1} ? active"
+                    class="page-item" aria-current="page">
+                    <a th:href="@{/users(size=${users.size}, page=${pageNumber})}"
+                       th:text="${pageNumber}"
+                       class="page-link"></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</body>
+</html>

@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class GroupControllerWebMvcTest {
     GroupService groupService;
 
     @Test
+    @WithMockUser
     void shouldDisplayRoomsList() throws Exception {
         when(groupService.findAll(any(PageRequest.class))).thenReturn(
                 new PageImpl<>(List.of(
@@ -36,7 +38,7 @@ public class GroupControllerWebMvcTest {
 
         mockMvc.perform(get("/groups"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "groups"))
+                .andExpect(model().attribute("content", "groups/groups-list"))
                 .andExpect(model().attributeExists("groups"))
                 .andExpect(content().string(containsString("GR-101")))
                 .andExpect(content().contentType("text/html;charset=UTF-8"))

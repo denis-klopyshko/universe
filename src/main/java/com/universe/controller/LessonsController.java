@@ -13,7 +13,7 @@ public class LessonsController {
 
     @GetMapping({"/lessons"})
     public String getLessonsList(Model model) {
-        model.addAttribute("content", "lessons");
+        model.addAttribute("content", "lessons/lessons-list");
         model.addAttribute("lessons", lessonService.findAll());
         return "index";
     }

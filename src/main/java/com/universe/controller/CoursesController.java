@@ -13,7 +13,7 @@ public class CoursesController {
 
     @GetMapping({"/courses"})
     public String homePage(Model model) {
-        model.addAttribute("content", "courses");
+        model.addAttribute("content", "courses/courses-list");
         model.addAttribute("courses", courseService.findAll());
         return "index";
     }

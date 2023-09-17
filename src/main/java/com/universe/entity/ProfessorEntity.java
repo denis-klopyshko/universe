@@ -1,6 +1,8 @@
 package com.universe.entity;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.DiscriminatorValue;
@@ -15,6 +17,10 @@ import javax.persistence.Entity;
 public class ProfessorEntity extends UserEntity {
     public ProfessorEntity() {
 
+    }
+
+    public ProfessorEntity(UserEntity user) {
+        super(user);
     }
 
     public String getFullName() {

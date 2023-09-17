@@ -5,6 +5,7 @@ import com.universe.repository.GroupRepository;
 import com.universe.repository.ProfessorRepository;
 import com.universe.repository.RoomRepository;
 import com.universe.service.impl.LessonServiceImpl;
+import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -23,6 +24,6 @@ public class LessonServiceImplTest {
     @MockBean
     private RoomRepository roomRepo;
 
-
+    @InjectMocks
     private LessonServiceImpl lessonService;
 }

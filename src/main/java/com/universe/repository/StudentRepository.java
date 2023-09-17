@@ -11,11 +11,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StudentRepository extends JpaRepository<StudentEntity, Long>, JpaSpecificationExecutor<StudentEntity> {
     @Query("select distinct s from StudentEntity s join fetch s.courses c where c.name = ?1")
     List<StudentEntity> findAllByCourseName(String courseName);
+
+    // fix N+1 problem
+    @Query("select distinct s from StudentEntity s join fetch s.courses c where s.id = ?1")
+    Optional<StudentEntity> findByIdFetchCourses(Long id);
 
     @UtilityClass
     static class Specs {

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.DayOfWeek;
@@ -29,6 +30,7 @@ public class LessonControllerWebMvcTest {
     LessonService lessonService;
 
     @Test
+    @WithMockUser
     void shouldDisplayLessonsList() throws Exception {
         when(lessonService.findAll()).thenReturn(
                  List.of(
@@ -48,7 +50,7 @@ public class LessonControllerWebMvcTest {
 
         mockMvc.perform(get("/lessons"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "lessons"))
+                .andExpect(model().attribute("content", "lessons/lessons-list"))
                 .andExpect(model().attributeExists("lessons"))
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
                 .andExpect(xpath("//tr[@data-test='lesson-item-row']").nodeCount(1));

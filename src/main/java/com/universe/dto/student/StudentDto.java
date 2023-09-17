@@ -1,6 +1,7 @@
 package com.universe.dto.student;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.universe.dto.RoleDto;
 import com.universe.dto.course.CourseShortDto;
 import com.universe.dto.group.GroupShortDto;
 import lombok.AllArgsConstructor;
@@ -9,12 +10,11 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -41,4 +41,26 @@ public class StudentDto {
 
     @Builder.Default
     private List<@NotNull CourseShortDto> courses = new ArrayList<>();
+
+    @NotEmpty
+    @Builder.Default
+    private List<@NotNull @Valid RoleDto> roles = new ArrayList<>();
+
+    public Set<String> getCourseNames() {
+        return this.getCourses()
+                .stream()
+                .map(CourseShortDto::getName)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<String> getRoleNames() {
+        return this.getRoles()
+                .stream()
+                .map(RoleDto::getName)
+                .collect(Collectors.toSet());
+    }
+
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
+    }
 }
