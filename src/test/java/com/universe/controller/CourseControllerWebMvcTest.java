@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -23,7 +24,9 @@ public class CourseControllerWebMvcTest {
     @MockBean
     CourseService courseService;
 
+
     @Test
+    @WithMockUser
     void shouldDisplayCourseList() throws Exception {
         when(courseService.findAll()).thenReturn(
                 List.of(
@@ -33,7 +36,7 @@ public class CourseControllerWebMvcTest {
 
         mockMvc.perform(get("/courses"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "courses"))
+                .andExpect(model().attribute("content", "courses/courses-list"))
                 .andExpect(model().attributeExists("courses"))
                 .andExpect(content().string(containsString("Math")))
                 .andExpect(content().contentType("text/html;charset=UTF-8"))

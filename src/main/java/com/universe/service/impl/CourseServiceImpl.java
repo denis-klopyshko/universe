@@ -7,7 +7,6 @@ import com.universe.exception.ResourceNotFoundException;
 import com.universe.mapping.CourseMapper;
 import com.universe.repository.CourseRepository;
 import com.universe.repository.LessonRepository;
-import com.universe.rest.filter.CourseFilter;
 import com.universe.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +42,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CourseDto> findAll(CourseFilter courseFilter, Pageable pageable) {
-        return courseRepo.findAll(courseFilter.toSpec(), pageable)
+    public Page<CourseDto> findAll(Pageable pageable) {
+        return courseRepo.findAll(pageable)
                 .map(MAPPER::mapToDto);
     }
 

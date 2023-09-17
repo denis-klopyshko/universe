@@ -1,26 +1,33 @@
 version: '3.8'
 services:
   client-backend:
-    image: client:0.0.1
+    image: universe-backend:0.0.1
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8181:8181"
     depends_on:
-      - service-db
+      postgres:
+        condition: service_healthy
     environment:
       - SERVER_PORT= 8181
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/universe
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/universe
+    restart: on-failure
 
   postgres:
-    image: postgres:14.7-alpine
+    image: postgres:15.3-alpine3.18
     environment:
       POSTGRES_DB: universe
-      POSTGRES_USER: postgres
+      PGUSER: postgres
       POSTGRES_PASSWORD: 310892
     ports:
       - "5432:5432"
     volumes:
       - ./db:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 5

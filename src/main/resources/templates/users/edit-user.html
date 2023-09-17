@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Edit User</title>
+</head>
+<body>
+<div th:fragment="content" class="container-lg">
+    <div class="row justify-content-center overflow-hidden" style="height: 100vh;">
+        <div class="mx-auto col-10 col-md-8 col-lg-6">
+            <h1 class="mb-3 mt-3" th:text="${'Edit User: ' + user.firstName + ' ' + user.lastName}"></h1>
+            <div th:if="${errorMessage}" th:text="${errorMessage}" class="alert alert-danger" role="alert"></div>
+            <form th:action="@{/users/{id}/edit(id=${user.id})}" method="post" th:object="${user}"
+                  data-test="edit-user-form">
+                <div class="row">
+                    <div class="mb-3 col">
+                        <div th:replace="fragments/user-inputs :: textInput(field='firstName', placeholder='First Name', required=true)"></div>
+                    </div>
+
+                    <div class="mb-3 col">
+                        <div th:replace="fragments/user-inputs :: textInput(field='lastName', placeholder='Last Name', required=true)"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col">
+                        <div th:replace="fragments/user-inputs :: emailInput"></div>
+                    </div>
+
+                    <div class="mb-3 col">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" th:field="*{enabled}"
+                                   th:checked="*{enabled}" role="switch" id="flexSwitchCheckDefault"/>
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Enabled</label>
+                        </div>
+                        <div th:if="${#fields.hasErrors('enabled')}" th:text="${#fields.errors('enabled')}"
+                             class="invalid-feedback"/>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <div class="col">
+                        <label class="form-label">User Type</label>
+                        <select th:field="*{userType}" id="user_type_control"
+                                class="form-select"
+                                th:classappend="${#fields.hasErrors('userType')} ? 'is-invalid'"
+                                required="required">
+                            <option th:each="type : ${userTypes}" th:value="${type}" th:text="${type}"/>
+                        </select>
+                        <div th:if="${#fields.hasErrors('userType')}" th:text="${#fields.errors('userType')}"
+                             class="invalid-feedback"/>
+                    </div>
+                </div>
+
+                <div id="group_control" class="mb-3 row">
+                    <div class="col">
+                        <select th:field="*{group}" class="form-select"
+                                th:classappend="${#fields.hasErrors('group')} ? 'is-invalid'">
+                            <option selected th:value="0">Select Group...</option>
+                            <option th:each="group : ${groups}" th:value="${group}" th:text="${group}"/>
+                        </select>
+                        <div th:if="${#fields.hasErrors('group')}" th:text="${#fields.errors('group')}"
+                             class="invalid-feedback"/>
+                    </div>
+                </div>
+
+                <div id="courses_control" class="mb-3 row">
+                    <div class="col">
+                        <label class="form-label">Courses</label>
+                        <select th:field="*{courses}" size="5" multiple="multiple" class="form-select"
+                                th:classappend="${#fields.hasErrors('courses')} ? 'is-invalid'">
+                            <option th:each="course, stat  : ${courses}" th:value="${course}" th:text="${course}"/>
+                        </select>
+                        <div th:if="${#fields.hasErrors('courses')}" th:text="${#fields.errors('courses')}"
+                             class="invalid-feedback"/>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <div class="col">
+                        <label class="form-label">Roles</label>
+                        <select th:field="*{roles}" size="5" multiple="multiple" class="form-select"
+                                th:classappend="${#fields.hasErrors('roles')} ? 'is-invalid'">
+                            <option th:each="role : ${roles}" th:value="${role}" th:text="${role}"/>
+                        </select>
+                        <div th:if="${#fields.hasErrors('roles')}" th:text="${#fields.errors('roles')}"
+                             class="invalid-feedback"/>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col text-end">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            let userTypeSelect = $('#user_type_control');
+            let studentRelatedFields = $('#group_control, #courses_control');
+            userTypeSelect.val() === 'STUDENT' ? studentRelatedFields.show() : studentRelatedFields.hide();
+
+            // Show/hide fields when dropdown value changes
+            userTypeSelect.on('change', function () {
+                let selectedOption = $(this).val();
+                selectedOption === 'STUDENT' ? studentRelatedFields.show() : studentRelatedFields.hide();
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

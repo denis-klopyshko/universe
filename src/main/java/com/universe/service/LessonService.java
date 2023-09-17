@@ -1,7 +1,6 @@
 package com.universe.service;
 
 import com.universe.dto.lesson.LessonDto;
-import com.universe.rest.filter.LessonFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,7 +11,7 @@ import java.util.List;
 public interface LessonService {
     List<LessonDto> findAll();
 
-    Page<LessonDto> findAll(@Valid LessonFilter lessonFilter, Pageable pageable);
+    Page<LessonDto> findAll(Pageable pageable);
 
     LessonDto create(@Valid @NotNull LessonDto lessonDto);
 

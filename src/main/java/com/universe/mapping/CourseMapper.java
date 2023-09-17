@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(uses = StudentShortMapper.class)
@@ -21,7 +20,7 @@ public interface CourseMapper {
     CourseEntity mapToEntity(CourseDto courseDto);
 
     @IterableMapping(elementTargetType = CourseEntity.class)
-    ArrayList<CourseEntity> mapAsList(List<CourseDto> courseDtoList);
+    List<CourseEntity> mapAsList(List<CourseDto> courseDtoList);
 
     @Mapping(target = "students", ignore = true)
     void updateCourseFromDto(CourseDto courseDto, @MappingTarget CourseEntity courseEntity);

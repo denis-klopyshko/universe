@@ -7,6 +7,7 @@ import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -14,6 +15,10 @@ import java.util.List;
 
 @Repository
 public interface CourseRepository extends JpaRepository<CourseEntity, Long>, JpaSpecificationExecutor<CourseEntity> {
+
+    @Query("select c.name from CourseEntity c")
+    List<String> findAllCourseNames();
+
     List<CourseEntity> findAllByNameIn(Collection<String> names);
 
     boolean existsByName(String name);

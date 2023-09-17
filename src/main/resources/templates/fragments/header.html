@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:include="index :: index">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Students</title>
@@ -9,7 +10,8 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-lg">
             <a class="navbar-brand" th:href="@{/}">
-                <img th:src="@{/logo.png}" alt="Universe Logo" class="d-inline-block align-text-top" width="40" height="34"/>
+                <img th:src="@{/img/logo.png}" alt="Universe Logo" class="d-inline-block align-text-top" width="40"
+                     height="34"/>
                 Universe
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -17,19 +19,29 @@
                     aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="nav-underline" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link" th:href="@{/students}">Students</a>
-                    <a class="nav-link" th:href="@{/professors}">Professors</a>
-                    <a class="nav-link" th:href="@{/rooms}">Rooms</a>
-                    <a class="nav-link" th:href="@{/lessons}">Lessons</a>
-                    <a class="nav-link" th:href="@{/courses}">Courses</a>
-                    <a class="nav-link" th:href="@{/groups}">Groups</a>
+                    <a class="nav-link" th:href="@{/users}" sec:authorize="hasAnyAuthority('users::write')">Users</a>
+                    <a class="nav-link" th:href="@{/students}"
+                       sec:authorize="hasAnyAuthority('students::write', 'students::read')">Students</a>
+                    <a class="nav-link" th:href="@{/professors}"
+                       sec:authorize="hasAnyAuthority('professors::write', 'professors::read')">Professors</a>
+                    <a class="nav-link" th:href="@{/rooms}"
+                       sec:authorize="hasAnyAuthority('rooms::write', 'rooms::read')">Rooms</a>
+                    <a class="nav-link" th:href="@{/lessons}"
+                       sec:authorize="hasAnyAuthority('lessons::write', 'lessons::read')">Lessons</a>
+                    <a class="nav-link" th:href="@{/courses}"
+                       sec:authorize="hasAnyAuthority('courses::write', 'courses::read')">Courses</a>
+                    <a class="nav-link" th:href="@{/groups}"
+                       sec:authorize="hasAnyAuthority('groups::write', 'groups::read')">Groups</a>
                 </div>
             </div>
-            <button class="btn btn-link">
-                Log in
-            </button>
+            <div sec:authorize="${isAuthenticated()}" class="row">
+                <span th:text="Welcome + ', ' + ${#authentication.name}" class="col navbar-text"></span>
+                <form th:action="@{/logout}" method="post" class="col">
+                    <button type="submit" class="btn btn-link"> Log out</button>
+                </form>
+            </div>
         </div>
     </nav>
 </header>

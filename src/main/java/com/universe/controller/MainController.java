@@ -8,7 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MainController {
     @GetMapping("/")
     public String entryPoint(Model model) {
-        model.addAttribute("content", "welcome");
+        model.addAttribute("content", "fragments/welcome");
         return "index";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login/login";
     }
 }

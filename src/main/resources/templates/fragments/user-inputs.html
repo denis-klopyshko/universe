@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Text Inputs</title>
+</head>
+<body>
+<div th:fragment="textInput(field, placeholder, required)">
+    <input type="text" class="form-control" th:field="*{__${field}__}" th:placeholder="${placeholder}"
+           th:classappend="${#fields.hasErrors(field)} ? 'is-invalid'"
+           minlength="3"
+           maxlength="100"
+           th:required="${required}"
+    />
+    <div th:if="${#fields.hasErrors(field)}" th:text="${#fields.errors(field)}" class="invalid-feedback"/>
+</div>
+
+<div th:fragment="emailInput">
+    <input type="email" class="form-control" th:field="*{email}" placeholder="Email"
+           aria-label="Email"
+           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+           maxlength="255"
+           required="required"
+    />
+    <div th:if="${#fields.hasErrors('email')}" th:text="${#fields.errors('email')}" class="invalid-feedback"/>
+</div>
+
+<div th:fragment="passwordInput">
+    <input type="password" class="form-control" th:field="*{password}" placeholder="Password"
+           aria-label="Password"
+           th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+           required="required"
+    />
+    <div th:if="${#fields.hasErrors('password')}" th:text="${#fields.errors('password')}" class="invalid-feedback"/>
+</div>
+</body>
+</html>

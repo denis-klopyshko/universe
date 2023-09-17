@@ -38,6 +38,15 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<GroupDto> findAll() {
+        return groupRepo.findAll()
+                .stream()
+                .map(MAPPER::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<GroupDto> findAllWithLessOrEqualStudents(Integer studentsQuantity) {
         return groupRepo.findAllByStudentsIsLessThanOrEqual(studentsQuantity)
                 .stream()
