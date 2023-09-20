@@ -28,6 +28,13 @@ public class CourseEntity {
     private String description;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "courses")
+    @Where(clause = "user_type='professor'")
+    @Builder.Default
+    @ToString.Exclude
+    private List<ProfessorEntity> professors = new ArrayList<>();
+
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "courses")
     @Where(clause = "user_type='student'")
     @Builder.Default
     @ToString.Exclude

@@ -1,12 +1,16 @@
 package com.universe.service;
 
-import com.universe.dto.course.CourseDto;
+import com.universe.dto.course.CourseResponseDto;
+import com.universe.dto.course.CreateCourseForm;
+import com.universe.dto.course.EditCourseForm;
 import com.universe.entity.CourseEntity;
 import com.universe.entity.LessonEntity;
 import com.universe.exception.ConflictException;
 import com.universe.exception.ResourceNotFoundException;
 import com.universe.repository.CourseRepository;
 import com.universe.repository.LessonRepository;
+import com.universe.repository.ProfessorRepository;
+import com.universe.repository.StudentRepository;
 import com.universe.service.impl.CourseServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -32,6 +36,12 @@ class CourseServiceImplTest {
     @MockBean
     LessonRepository lessonRepo;
 
+    @MockBean
+    StudentRepository studentRepo;
+
+    @MockBean
+    ProfessorRepository professorRep;
+
     @Autowired
     CourseServiceImpl courseService;
 
@@ -42,12 +52,11 @@ class CourseServiceImplTest {
         when(courseRepo.existsByName(course.getName())).thenReturn(false);
         when(courseRepo.save(any(CourseEntity.class))).thenReturn(course);
 
-        CourseDto newCourseDto = CourseDto.builder().name("Math").description("Math Description").build();
-        CourseDto courseDto = courseService.create(newCourseDto);
+        CreateCourseForm newCourseDto = CreateCourseForm.builder().name("Math").description("Math Description").build();
+        CourseResponseDto courseDto = courseService.create(newCourseDto);
 
-        assertThat(courseDto)
-                .usingRecursiveComparison()
-                .isEqualTo(newCourseDto);
+        assertThat(courseDto.getName()).isEqualTo(newCourseDto.getName());
+        assertThat(courseDto.getDescription()).isEqualTo(newCourseDto.getDescription());
 
         verify(courseRepo).save(any(CourseEntity.class));
     }
@@ -58,7 +67,7 @@ class CourseServiceImplTest {
 
         when(courseRepo.existsByName(anyString())).thenReturn(true);
 
-        assertThatThrownBy(() -> courseService.create(CourseDto.builder().name("Math").build()))
+        assertThatThrownBy(() -> courseService.create(CreateCourseForm.builder().name("Math").build()))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("Course with name '%s' already exists!", courseEntity.getName());
     }
@@ -67,7 +76,7 @@ class CourseServiceImplTest {
     void shouldNotUpdateCourseNotFound() {
         when(courseRepo.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> courseService.update(1L, new CourseDto()))
+        assertThatThrownBy(() -> courseService.update(1L, new EditCourseForm()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Course with id: 1 not found!");
     }
@@ -82,7 +91,7 @@ class CourseServiceImplTest {
         when(courseRepo.findById(anyLong())).thenReturn(Optional.of(courseBeforeUpdate));
         when(courseRepo.save(any(CourseEntity.class))).thenReturn(courseAfterUpdate);
 
-        CourseDto courseDto = courseService.update(1L, CourseDto.builder().id(1L).name("Biology").build());
+        CourseResponseDto courseDto = courseService.update(1L, EditCourseForm.builder().id(1L).name("Biology").build());
         assertThat(courseDto.getName()).isEqualTo("Biology");
         assertThat(courseDto.getDescription()).isEqualTo("Biology Description");
     }

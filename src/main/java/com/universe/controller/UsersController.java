@@ -68,11 +68,11 @@ public class UsersController {
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             userService.delete(id);
-            redirectAttributes.addFlashAttribute("message", "User successfully deleted!");
+            redirectAttributes.addFlashAttribute("toastMessage", "User successfully deleted!");
             return "redirect:/users";
         } catch (Exception e) {
-            log.error("Error deleting user: " + e.getLocalizedMessage());
-            redirectAttributes.addFlashAttribute("error", e.getLocalizedMessage());
+            log.error("Error deleting user: [{}]",  e.getLocalizedMessage());
+            redirectAttributes.addFlashAttribute("toastError", e.getLocalizedMessage());
             return "redirect:/users";
         }
     }
@@ -108,7 +108,7 @@ public class UsersController {
         try {
             userService.create(user);
         } catch (Exception e) {
-            log.error("Error saving user: " + e.getLocalizedMessage());
+            log.error("Error saving user: [{}]",  e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("user", user);
             return "redirect:/users/new";
@@ -150,7 +150,7 @@ public class UsersController {
         try {
             userService.update(id, user);
         } catch (Exception e) {
-            log.error("Error updating user" + e.getLocalizedMessage());
+            log.error("Error updating user: [{}]",  e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("user", user);
             return "redirect:/users/{id}/edit";
