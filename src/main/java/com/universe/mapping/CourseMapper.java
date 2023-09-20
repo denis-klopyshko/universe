@@ -1,27 +1,49 @@
 package com.universe.mapping;
 
-import com.universe.dto.course.CourseDto;
+import com.universe.dto.course.CourseResponseDto;
+import com.universe.dto.course.CreateCourseForm;
+import com.universe.dto.course.EditCourseForm;
+import com.universe.dto.professor.ProfessorShortDto;
+import com.universe.dto.student.StudentShortDto;
 import com.universe.entity.CourseEntity;
-import org.mapstruct.IterableMapping;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
-@Mapper(uses = StudentShortMapper.class)
+@Mapper(uses = {StudentShortMapper.class, ProfessorShortMapper.class})
 public interface CourseMapper {
     CourseMapper INSTANCE = Mappers.getMapper(CourseMapper.class);
 
-    CourseDto mapToDto(CourseEntity courseEntity);
+    CourseResponseDto mapToDto(CourseEntity courseEntity);
+
+    CourseEntity mapToEntity(CreateCourseForm courseForm);
+
+    EditCourseForm mapDtoToEditForm(CourseResponseDto courseResponseDto);
 
     @Mapping(target = "students", ignore = true)
-    CourseEntity mapToEntity(CourseDto courseDto);
+    @Mapping(target = "professors", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    void updateEntityFromRequest(EditCourseForm editCourseForm, @MappingTarget CourseEntity courseEntity);
 
-    @IterableMapping(elementTargetType = CourseEntity.class)
-    List<CourseEntity> mapAsList(List<CourseDto> courseDtoList);
+    @AfterMapping
+    default void mapStudentsEmails(CourseResponseDto courseResponseDto, @MappingTarget EditCourseForm.EditCourseFormBuilder builder) {
+        var studentsEmails = courseResponseDto.getStudents()
+                .stream()
+                .map(StudentShortDto::getEmail)
+                .collect(Collectors.toList());
+        builder.studentsEmails(studentsEmails);
+    }
 
-    @Mapping(target = "students", ignore = true)
-    void updateCourseFromDto(CourseDto courseDto, @MappingTarget CourseEntity courseEntity);
+    @AfterMapping
+    default void mapProfessorsEmails(CourseResponseDto courseResponseDto, @MappingTarget EditCourseForm.EditCourseFormBuilder builder) {
+        var professorEmails = courseResponseDto.getProfessors()
+                .stream()
+                .map(ProfessorShortDto::getEmail)
+                .collect(Collectors.toList());
+        builder.professorsEmails(professorEmails);
+    }
 }

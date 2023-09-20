@@ -1,8 +1,7 @@
 package com.universe.mapping;
 
-import com.universe.dto.professor.ProfessorDto;
 import com.universe.dto.RoleDto;
-import com.universe.dto.user.UpdateUserForm;
+import com.universe.dto.professor.ProfessorDto;
 import com.universe.dto.user.UserResponseDto;
 import com.universe.entity.ProfessorEntity;
 import com.universe.enums.UserType;
@@ -27,8 +26,6 @@ public interface ProfessorMapper {
     ProfessorEntity mapBaseAttributes(ProfessorDto professorDto);
 
     void updateProfessorFromDto(ProfessorDto professorDto, @MappingTarget ProfessorEntity professor);
-
-    ProfessorDto mapUpdateUserRequestDtoToProfessorDto(UpdateUserForm updateUserRequest);
 
     @Mapping(target = "userType", expression = "java(getCurrentUserType())")
     UserResponseDto mapToUserResponse(ProfessorEntity professorEntity);

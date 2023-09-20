@@ -19,4 +19,8 @@ public class StudentShortDto {
     private String lastName;
 
     private String email;
+
+    public String getFullName() {
+        return String.format("%s %s", this.getFirstName(), this.getLastName());
+    }
 }

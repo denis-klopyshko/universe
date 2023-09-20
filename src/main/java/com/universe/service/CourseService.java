@@ -1,6 +1,8 @@
 package com.universe.service;
 
-import com.universe.dto.course.CourseDto;
+import com.universe.dto.course.CourseResponseDto;
+import com.universe.dto.course.CreateCourseForm;
+import com.universe.dto.course.EditCourseForm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -9,15 +11,15 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface CourseService {
-    List<CourseDto> findAll();
+    List<CourseResponseDto> findAll();
 
-    Page<CourseDto> findAll(Pageable pageable);
+    Page<CourseResponseDto> findAll(Pageable pageable);
 
-    CourseDto create(@Valid @NotNull CourseDto courseDto);
+    CourseResponseDto create(@Valid @NotNull CreateCourseForm courseForm);
 
-    CourseDto update(@NotNull Long id, @Valid @NotNull CourseDto courseDto);
+    CourseResponseDto update(@NotNull Long id, @Valid @NotNull EditCourseForm editCourseForm);
 
-    CourseDto findOne(@NotNull Long id);
+    CourseResponseDto findOne(@NotNull Long id);
 
     void delete(@NotNull Long courseId);
 }

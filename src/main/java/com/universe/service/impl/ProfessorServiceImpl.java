@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 @Slf4j
@@ -29,6 +32,14 @@ public class ProfessorServiceImpl implements ProfessorService {
     public Page<ProfessorDto> findAll(Pageable pageable) {
         return professorRepo.findAll(pageable)
                 .map(MAPPER::mapToDto);
+    }
+
+    @Override
+    public List<ProfessorDto> findAll() {
+        return professorRepo.findAll()
+                .stream()
+                .map(MAPPER::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override

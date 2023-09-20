@@ -72,7 +72,7 @@ public class UsersControllerWebMvcTest {
     }
 
     @Test
-    @WithMockUser(authorities = {"users::write", "users::write"})
+    @WithMockUser(authorities = {"users::write"})
     void shouldCreateNewUser() throws Exception {
         ArgumentCaptor<CreateUserForm> userFormArg = ArgumentCaptor.forClass(CreateUserForm.class);
         when(userService.create(userFormArg.capture())).thenReturn(new UserResponseDto());
