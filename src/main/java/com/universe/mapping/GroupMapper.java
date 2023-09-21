@@ -1,6 +1,8 @@
 package com.universe.mapping;
 
-import com.universe.dto.group.GroupDto;
+import com.universe.dto.group.CreateGroupForm;
+import com.universe.dto.group.EditGroupForm;
+import com.universe.dto.group.GroupResponseDto;
 import com.universe.entity.GroupEntity;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -12,13 +14,15 @@ import org.mapstruct.factory.Mappers;
 public interface GroupMapper {
     GroupMapper INSTANCE = Mappers.getMapper(GroupMapper.class);
 
-    GroupDto mapToDto(GroupEntity groupEntity);
+    GroupResponseDto mapToDto(GroupEntity groupEntity);
+
+    EditGroupForm mapToEditForm(GroupResponseDto groupResponseDto);
 
     @Mapping(target = "students", ignore = true)
     @Mapping(target = "lessons", ignore = true)
-    GroupEntity mapToEntity(GroupDto groupDto);
+    GroupEntity mapToEntity(CreateGroupForm createGroupForm);
 
     @Mapping(target = "students", ignore = true)
     @Mapping(target = "lessons", ignore = true)
-    void updateGroupFromDto(GroupDto groupDto, @MappingTarget GroupEntity groupEntity);
+    void updateGroupFromDto(EditGroupForm editGroupForm, @MappingTarget GroupEntity groupEntity);
 }

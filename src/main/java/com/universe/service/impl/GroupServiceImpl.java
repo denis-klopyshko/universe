@@ -1,6 +1,8 @@
 package com.universe.service.impl;
 
-import com.universe.dto.group.GroupDto;
+import com.universe.dto.group.CreateGroupForm;
+import com.universe.dto.group.EditGroupForm;
+import com.universe.dto.group.GroupResponseDto;
 import com.universe.entity.GroupEntity;
 import com.universe.exception.ConflictException;
 import com.universe.exception.RelationRemovalException;
@@ -31,14 +33,14 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<GroupDto> findAll(Pageable pageable) {
+    public Page<GroupResponseDto> findAll(Pageable pageable) {
         return groupRepo.findAll(pageable)
                 .map(MAPPER::mapToDto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<GroupDto> findAll() {
+    public List<GroupResponseDto> findAll() {
         return groupRepo.findAll()
                 .stream()
                 .map(MAPPER::mapToDto)
@@ -47,7 +49,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<GroupDto> findAllWithLessOrEqualStudents(Integer studentsQuantity) {
+    public List<GroupResponseDto> findAllWithLessOrEqualStudents(Integer studentsQuantity) {
         return groupRepo.findAllByStudentsIsLessThanOrEqual(studentsQuantity)
                 .stream()
                 .map(MAPPER::mapToDto)
@@ -55,28 +57,28 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public GroupDto create(GroupDto groupDto) {
-        log.info("Creating new group: {}", groupDto);
-        validateNameIsUnique(groupDto.getName());
-        GroupEntity savedGroupEntity = groupRepo.save(MAPPER.mapToEntity(groupDto));
+    public GroupResponseDto create(CreateGroupForm createGroupForm) {
+        log.info("Creating new group: {}", createGroupForm);
+        validateNameIsUnique(createGroupForm.getName());
+        GroupEntity savedGroupEntity = groupRepo.save(MAPPER.mapToEntity(createGroupForm));
         return MAPPER.mapToDto(savedGroupEntity);
     }
 
     @Override
-    public GroupDto update(Long id, GroupDto groupDto) {
-        log.info("Updating group: {}", groupDto);
+    public GroupResponseDto update(Long id, EditGroupForm editGroupForm) {
+        log.info("Updating group: {}", editGroupForm);
         GroupEntity groupEntity = findGroupEntity(id);
-        if (!groupEntity.getName().equals(groupDto.getName())) {
-            validateNameIsUnique(groupDto.getName());
+        if (!groupEntity.getName().equals(editGroupForm.getName())) {
+            validateNameIsUnique(editGroupForm.getName());
         }
 
-        MAPPER.updateGroupFromDto(groupDto, groupEntity);
+        MAPPER.updateGroupFromDto(editGroupForm, groupEntity);
         return MAPPER.mapToDto(groupRepo.save(groupEntity));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public GroupDto findOne(Long groupId) {
+    public GroupResponseDto findOne(Long groupId) {
         GroupEntity groupEntity = findGroupEntity(groupId);
         return MAPPER.mapToDto(groupEntity);
     }
@@ -106,9 +108,7 @@ public class GroupServiceImpl implements GroupService {
 
     private void validateNoAssignedStudents(GroupEntity groupEntity) {
         if (!groupEntity.getStudents().isEmpty()) {
-            throw new RelationRemovalException(
-                    String.format("Can't delete group with assigned students! Students: %s", groupEntity.getStudents())
-            );
+            throw new RelationRemovalException("Can't delete group with assigned students!");
         }
     }
 

@@ -1,6 +1,8 @@
 package com.universe.service;
 
-import com.universe.dto.group.GroupDto;
+import com.universe.dto.group.CreateGroupForm;
+import com.universe.dto.group.EditGroupForm;
+import com.universe.dto.group.GroupResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -9,17 +11,17 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface GroupService {
-    Page<GroupDto> findAll(Pageable pageable);
+    Page<GroupResponseDto> findAll(Pageable pageable);
 
-    List<GroupDto> findAll();
+    List<GroupResponseDto> findAll();
 
-    List<GroupDto> findAllWithLessOrEqualStudents(@NotNull Integer studentsQuantity);
+    List<GroupResponseDto> findAllWithLessOrEqualStudents(@NotNull Integer studentsQuantity);
 
-    GroupDto create(@Valid @NotNull GroupDto groupDto);
+    GroupResponseDto create(@Valid @NotNull CreateGroupForm createGroupForm);
 
-    GroupDto update(@NotNull Long id, @Valid @NotNull GroupDto groupDto);
+    GroupResponseDto update(@NotNull Long id, @Valid @NotNull EditGroupForm editGroupForm);
 
-    GroupDto findOne(@NotNull Long groupId);
+    GroupResponseDto findOne(@NotNull Long groupId);
 
     void delete(@NotNull Long groupId);
 }

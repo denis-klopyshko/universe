@@ -60,7 +60,6 @@ public class CourseControllerWebMvcTest {
                 .andExpect(xpath("//tr[@data-test='course-item-row']").nodeCount(1));
     }
 
-
     @Test
     @WithMockUser(authorities = {"course::write"})
     void shouldCreateNewCourse() throws Exception {

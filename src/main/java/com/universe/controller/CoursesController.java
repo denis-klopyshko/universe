@@ -23,20 +23,21 @@ import javax.validation.Valid;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/courses")
 public class CoursesController {
     private final CourseService courseService;
     private final StudentService studentService;
     private final ProfessorService professorService;
 
     @PreAuthorize("hasAnyAuthority({'courses::write', 'courses::read'})")
-    @RequestMapping(value = "/courses", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public String getCoursesListPage(Model model) {
         model.addAttribute("courses", courseService.findAll());
         return "courses/courses-list";
     }
 
     @PreAuthorize("hasAnyAuthority('courses::write')")
-    @RequestMapping(value = "/courses/new", method = RequestMethod.GET)
+    @RequestMapping(value = "/new", method = RequestMethod.GET)
     public String getCreateCoursePage(Model model) {
         if (!model.containsAttribute("course")) {
             model.addAttribute("course", new CreateCourseForm());
@@ -46,7 +47,7 @@ public class CoursesController {
     }
 
     @PreAuthorize("hasAnyAuthority('courses::write')")
-    @RequestMapping(value = "/courses", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public String createCourse(@Valid @ModelAttribute("course") CreateCourseForm course,
                                BindingResult result,
                                RedirectAttributes redirectAttributes) {
@@ -71,7 +72,7 @@ public class CoursesController {
     }
 
     @PreAuthorize("hasAnyAuthority('courses::write')")
-    @RequestMapping(value = "/courses/{id}/edit", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.GET)
     public String getEditCoursePage(Model model, @PathVariable("id") Long id) {
         var course = courseService.findOne(id);
         var editCourseForm = CourseMapper.INSTANCE.mapDtoToEditForm(course);
@@ -87,7 +88,7 @@ public class CoursesController {
     }
 
     @PreAuthorize("hasAnyAuthority('courses::write')")
-    @RequestMapping(value = "/courses/{id}/edit", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}/edit", method = RequestMethod.POST)
     public String updateCourse(@PathVariable("id") Long id,
                                @Valid @ModelAttribute("course") EditCourseForm course,
                                BindingResult result,
@@ -111,7 +112,7 @@ public class CoursesController {
     }
 
     @PreAuthorize("hasAnyAuthority('courses::write')")
-    @RequestMapping(value = "/courses/{id}/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}/delete", method = RequestMethod.GET)
     public String deleteCourse(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             courseService.delete(id);

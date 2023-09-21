@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +13,10 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupDto {
-    private static final String GROUP_NAME_PATTERN = "^[aA-zZ]{2}-\\d{2}$";
+public class GroupResponseDto {
 
     private Long id;
 
-    @NotBlank
-    @Pattern(regexp = GROUP_NAME_PATTERN, message = "Group name should match regexp.")
     private String name;
 
     @Builder.Default
