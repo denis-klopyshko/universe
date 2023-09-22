@@ -12,10 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -23,20 +20,21 @@ import javax.validation.Valid;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/courses")
 public class CoursesController {
     private final CourseService courseService;
     private final StudentService studentService;
     private final ProfessorService professorService;
 
     @PreAuthorize("hasAnyAuthority({'courses::write', 'courses::read'})")
-    @RequestMapping(value = "/courses", method = RequestMethod.GET)
+    @GetMapping
     public String getCoursesListPage(Model model) {
         model.addAttribute("courses", courseService.findAll());
         return "courses/courses-list";
     }
 
     @PreAuthorize("hasAnyAuthority('courses::write')")
-    @RequestMapping(value = "/courses/new", method = RequestMethod.GET)
+    @GetMapping(value = "/new")
     public String getCreateCoursePage(Model model) {
         if (!model.containsAttribute("course")) {
             model.addAttribute("course", new CreateCourseForm());
@@ -46,7 +44,7 @@ public class CoursesController {
     }
 
     @PreAuthorize("hasAnyAuthority('courses::write')")
-    @RequestMapping(value = "/courses", method = RequestMethod.POST)
+    @PostMapping
     public String createCourse(@Valid @ModelAttribute("course") CreateCourseForm course,
                                BindingResult result,
                                RedirectAttributes redirectAttributes) {
@@ -71,7 +69,7 @@ public class CoursesController {
     }
 
     @PreAuthorize("hasAnyAuthority('courses::write')")
-    @RequestMapping(value = "/courses/{id}/edit", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}/edit")
     public String getEditCoursePage(Model model, @PathVariable("id") Long id) {
         var course = courseService.findOne(id);
         var editCourseForm = CourseMapper.INSTANCE.mapDtoToEditForm(course);
@@ -87,7 +85,7 @@ public class CoursesController {
     }
 
     @PreAuthorize("hasAnyAuthority('courses::write')")
-    @RequestMapping(value = "/courses/{id}/edit", method = RequestMethod.POST)
+    @PostMapping(value = "/{id}/edit")
     public String updateCourse(@PathVariable("id") Long id,
                                @Valid @ModelAttribute("course") EditCourseForm course,
                                BindingResult result,
@@ -111,7 +109,7 @@ public class CoursesController {
     }
 
     @PreAuthorize("hasAnyAuthority('courses::write')")
-    @RequestMapping(value = "/courses/{id}/delete", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}/delete")
     public String deleteCourse(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             courseService.delete(id);

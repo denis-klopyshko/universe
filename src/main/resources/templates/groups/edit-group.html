@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head th:replace="index :: head('Edit Group')"></head>
+<body>
+<div class="container-fluid bg-secondary-subtle pb-4 min-vh-100">
+    <header th:replace="fragments/header :: header"></header>
+
+    <section>
+        <div class="container-lg">
+            <div class="row justify-content-center overflow-hidden" style="height: 100vh;">
+                <div class="mx-auto col-10 col-md-8 col-lg-6">
+                    <h1 class="mb-3 mt-3">Edit Group</h1>
+                    <div th:if="${errorMessage}" th:text="${errorMessage}" class="alert alert-danger"
+                         role="alert"></div>
+                    <form th:action="@{/groups/{id}/edit(id=${group.id})}" method="post" th:object="${group}"
+                          data-test="edit-group-form">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <div th:replace="fragments/user-inputs :: textInput(field='name', placeholder='Group Name', required=true)"></div>
+                            </div>
+                        </div>
+
+<!--                        <div id="students_control" class="mb-3 row">-->
+<!--                            <div class="col">-->
+<!--                                <label for="studentsEmails">Students</label>-->
+<!--                                <select class="form-select" id="studentsEmails" size="5"-->
+<!--                                        name="studentsEmails"-->
+<!--                                        th:classappend="${#fields.hasErrors('studentsEmails')} ? 'is-invalid'"-->
+<!--                                        multiple="multiple">-->
+<!--                                    <option th:each="student : ${students}"-->
+<!--                                            th:value="${student.email}"-->
+<!--                                            th:text="${student.firstName} + ' ' + ${student.lastName} + ' - (' + ${student.email} + ')'"-->
+<!--                                            th:selected="${#lists.contains(course.studentsEmails, student.email)}"-->
+<!--                                    />-->
+<!--                                </select>-->
+<!--                                <div th:if="${#fields.hasErrors('studentsEmails')}"-->
+<!--                                     th:text="${#fields.errors('studentsEmails')}"-->
+<!--                                     class="invalid-feedback"/>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+                        <div class="row mt-4">
+                            <div class="col text-end">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="fragments/footer :: footer"></footer>
+</div>
+<script th:replace="index :: required-scripts"></script>
+</body>
+</html>

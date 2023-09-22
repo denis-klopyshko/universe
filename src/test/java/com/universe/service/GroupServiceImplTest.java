@@ -1,6 +1,8 @@
 package com.universe.service;
 
-import com.universe.dto.group.GroupDto;
+import com.universe.dto.group.CreateGroupForm;
+import com.universe.dto.group.EditGroupForm;
+import com.universe.dto.group.GroupResponseDto;
 import com.universe.entity.GroupEntity;
 import com.universe.entity.LessonEntity;
 import com.universe.entity.StudentEntity;
@@ -34,12 +36,12 @@ class GroupServiceImplTest {
     @Test
     void shouldCreateNewGroup() {
         GroupEntity group = getGroupEntity();
-        var groupDto = GroupDto.builder().name("GR-10").build();
+        var createGroupForm = CreateGroupForm.builder().name("GR-10").build();
 
-        when(groupRepo.existsByName(groupDto.getName())).thenReturn(false);
+        when(groupRepo.existsByName(createGroupForm.getName())).thenReturn(false);
         when(groupRepo.save(any(GroupEntity.class))).thenReturn(group);
 
-        var createdGroup = groupService.create(groupDto);
+        var createdGroup = groupService.create(createGroupForm);
         assertThat(createdGroup.getName()).isEqualTo("GR-10");
         assertThat(createdGroup.getId()).isEqualTo(1L);
 
@@ -49,11 +51,11 @@ class GroupServiceImplTest {
     @Test
     void shouldNotCreateGroupAlreadyExists() {
         var groupEntity = getGroupEntity();
-        var groupDto = GroupDto.builder().name("GR-10").build();
+        var createGroupForm = CreateGroupForm.builder().name("GR-10").build();
 
-        when(groupRepo.existsByName(groupDto.getName())).thenReturn(true);
+        when(groupRepo.existsByName(createGroupForm.getName())).thenReturn(true);
 
-        assertThatThrownBy(() -> groupService.create(groupDto))
+        assertThatThrownBy(() -> groupService.create(createGroupForm))
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("Group with name '%s' already exists!", groupEntity.getName());
     }
@@ -62,7 +64,7 @@ class GroupServiceImplTest {
     void shouldNotUpdateGroupNotFound() {
         when(groupRepo.findById(1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> groupService.update(1L, GroupDto.builder().id(1L).name("GR-10").build()))
+        assertThatThrownBy(() -> groupService.update(1L, EditGroupForm.builder().id(1L).name("GR-10").build()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Group with id: 1 not found!");
     }
@@ -76,7 +78,7 @@ class GroupServiceImplTest {
         when(groupRepo.findById(groupBeforeUpdate.getId())).thenReturn(Optional.of(groupBeforeUpdate));
         when(groupRepo.save(any(GroupEntity.class))).thenReturn(groupAfterUpdate);
 
-        GroupDto groupDto = groupService.update(1L, GroupDto.builder().id(1L).name("GR-11").build());
+        GroupResponseDto groupDto = groupService.update(1L, EditGroupForm.builder().id(1L).name("GR-11").build());
         assertThat(groupDto.getName()).isEqualTo("GR-11");
     }
 
@@ -97,7 +99,7 @@ class GroupServiceImplTest {
 
         assertThatThrownBy(() -> groupService.delete(1L))
                 .isInstanceOf(RelationRemovalException.class)
-                .hasMessageContaining("Can't delete group with assigned students! Students:");
+                .hasMessageContaining("Can't delete group with assigned students!");
     }
 
     @Test
