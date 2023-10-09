@@ -4,7 +4,6 @@ import com.universe.dto.group.CreateGroupForm;
 import com.universe.dto.group.EditGroupForm;
 import com.universe.mapping.GroupMapper;
 import com.universe.service.GroupService;
-import com.universe.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +24,6 @@ public class GroupsController {
     private static final String HAS_WRITE_PERMISSION = "hasAnyAuthority('groups::write')";
 
     private final GroupService groupService;
-    private final StudentService studentService;
 
     @PreAuthorize(HAS_READ_PERMISSION)
     @GetMapping
