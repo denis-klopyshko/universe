@@ -1,67 +1,79 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>Students</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+<head th:replace="index :: head('Students')"></head>
 <body>
-<div th:fragment="content" class="container-lg">
-    <div class="row text-left mt-5 mb-5">
-        <div class="col-sm-10 align-middle">
-            <h2>Students</h2>
-        </div>
-        <div class="col-sm-2" sec:authorize="hasAnyAuthority('students::write', 'users::write')">
-            <div th:replace="fragments/buttons :: primaryButton('Add Student', '/students/new')"></div>
-        </div>
-    </div>
-    <h3 th:if="${#lists.isEmpty(students)}" class="text-center">List is Empty</h3>
-    <table class="table table-bordered table-fixed" th:unless="${#lists.isEmpty(students)}" data-test="students-table">
-        <thead>
-        <tr>
-            <th scope="col" style="width: 5%">ID</th>
-            <th scope="col" style="width: 15%">Full Name</th>
-            <th scope="col" style="width: 5%">Group</th>
-            <th scope="col" style="width: 20%">Email</th>
-            <th scope="col">Courses</th>
-            <th scope="col" style="width: 10%" sec:authorize="hasAnyAuthority('students::write', 'users::write')">
-                Actions
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="student : ${students}" data-test="student-item-row">
-            <th th:text="${student.id}"></th>
-            <td th:text="${student.getFullName()}"></td>
-            <td th:text="${student.group?.name}"></td>
-            <td th:text="${student.email}" class="text-overflow-ellipsis"></td>
-            <td th:text="${#strings.listJoin(student.getCourseNames(), ', ')}" class="text-overflow-ellipsis"></td>
-            <td sec:authorize="hasAnyAuthority('students::write', 'users::write')">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <a th:href="@{/students/{id}/edit(id=${student.id})}" class="btn btn-primary me-md-2 btn-sm"
-                       tabindex="-1"
-                       role="button">Edit</a>
-                    <a th:href="@{/students/{id}/delete(id=${student.id})}" class="btn btn-primary btn-sm"
-                       tabindex="-1"
-                       role="button">Delete</a>
+<div class="container-fluid bg-secondary-subtle pb-4 min-vh-100">
+    <header th:replace="fragments/header :: header"></header>
+    <section>
+        <div class="container">
+            <div class="row text-left mt-5 mb-5">
+                <div class="col-sm-10 align-middle">
+                    <h2>Students</h2>
                 </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="d-flex flex-row mb-1 justify-content-end">
-        <nav aria-label="pagination">
-            <ul class="pagination pagination-sm" th:if="${students.totalPages > 0}"
-                th:each="pageNumber : ${pageNumbers}">
-                <li th:classappend="${pageNumber == students.number + 1} ? active"
-                    class="page-item" aria-current="page">
-                    <a th:href="@{/templates/students(size=${students.size}, page=${pageNumber})}"
-                       th:text="${pageNumber}"
-                       class="page-link"></a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+                <div class="col-sm-2" sec:authorize="hasAnyAuthority('students::write', 'users::write')">
+                    <div th:replace="fragments/buttons :: primaryButton('Add Student', '/students/new')"></div>
+                </div>
+            </div>
+            <h3 th:if="${#lists.isEmpty(students)}" class="text-center">List is Empty</h3>
+            <table class="table table-bordered table-fixed" th:unless="${#lists.isEmpty(students)}"
+                   data-test="students-table">
+                <thead>
+                <tr>
+                    <th scope="col" style="width: 5%">ID</th>
+                    <th scope="col" style="width: 15%">Full Name</th>
+                    <th scope="col" style="width: 5%">Group</th>
+                    <th scope="col" style="width: 20%">Email</th>
+                    <th scope="col">Courses</th>
+                    <th scope="col" style="width: 10%"
+                        sec:authorize="hasAnyAuthority('students::write', 'users::write')">
+                        Actions
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="student : ${students}" data-test="student-item-row">
+                    <th th:text="${student.id}"></th>
+                    <td th:text="${student.getFullName()}"></td>
+                    <td>
+                        <a th:unless="${student.group == null}"
+                           th:href="@{/groups/{id}/view(id=${student.group.id})}"
+                           th:text="${student.group.name}"
+                        ></a>
+                    </td>
+                    <td th:text="${student.email}" class="text-overflow-ellipsis"></td>
+                    <td th:text="${#strings.listJoin(student.getCourseNames(), ', ')}"
+                        class="text-overflow-ellipsis"></td>
+                    <td sec:authorize="hasAnyAuthority('students::write', 'users::write')">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a th:href="@{/students/{id}/edit(id=${student.id})}" class="btn btn-primary me-md-2 btn-sm"
+                               tabindex="-1"
+                               role="button">Edit</a>
+                            <a th:href="@{/students/{id}/delete(id=${student.id})}" class="btn btn-primary btn-sm"
+                               tabindex="-1"
+                               role="button">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="d-flex flex-row mb-1 justify-content-end">
+                <nav aria-label="pagination">
+                    <ul class="pagination pagination-sm" th:if="${students.totalPages > 0}"
+                        th:each="pageNumber : ${pageNumbers}">
+                        <li th:classappend="${pageNumber == students.number + 1} ? active"
+                            class="page-item" aria-current="page">
+                            <a th:href="@{/templates/students(size=${students.size}, page=${pageNumber})}"
+                               th:text="${pageNumber}"
+                               class="page-link"></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+    <footer th:replace="fragments/footer :: footer"></footer>
 </div>
+<script th:replace="index :: required-scripts"></script>
 </body>
 </html>

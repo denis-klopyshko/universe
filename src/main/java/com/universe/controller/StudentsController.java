@@ -52,7 +52,6 @@ public class StudentsController {
                 PageRequest.of(currentPage - 1, pageSize, Sort.by(Sort.Direction.ASC, "id"))
         );
         model.addAttribute("students", studentsPage);
-        model.addAttribute("content", "students/students-list");
 
         int totalPages = studentsPage.getTotalPages();
         if (totalPages > 0) {
@@ -62,7 +61,7 @@ public class StudentsController {
             model.addAttribute("pageNumbers", pageNumbers);
         }
 
-        return "index";
+        return "students/students-list";
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
@@ -79,7 +78,7 @@ public class StudentsController {
             model.addAttribute("student", studentForm);
         }
 
-        return "index";
+        return "students/create-student";
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
@@ -96,7 +95,7 @@ public class StudentsController {
         try {
             userService.create(student);
         } catch (Exception e) {
-            log.error("Error saving student: " + e.getLocalizedMessage());
+            log.error("Error saving student: [{}]", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("student", student);
             return "redirect:/students/new";
@@ -114,13 +113,12 @@ public class StudentsController {
         model.addAttribute("courses", courseRepo.findAllCourseNames());
         model.addAttribute("userType", UserType.STUDENT);
         model.addAttribute("groups", groupRepo.findAllGroupNames());
-        model.addAttribute("content", "students/edit-student");
 
         if (!model.containsAttribute("student")) {
             model.addAttribute("student", updateStudentForm);
         }
 
-        return "index";
+        return "students/edit-student";
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
@@ -138,7 +136,7 @@ public class StudentsController {
         try {
             userService.update(id, student);
         } catch (Exception e) {
-            log.error("Error updating student" + e.getLocalizedMessage());
+            log.error("Error updating student: [{}]", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("student", student);
             return "redirect:/students/{id}/edit";
@@ -149,8 +147,16 @@ public class StudentsController {
 
     @PreAuthorize("hasAnyAuthority('students::write')")
     @RequestMapping(value = "/students/{id}/delete", method = RequestMethod.GET)
-    public String deleteStudent(@PathVariable Long id) {
-        userService.delete(id);
+    public String deleteStudent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.delete(id);
+        } catch (Exception e) {
+            log.error("Error deleting student: [{}]", e.getLocalizedMessage());
+            redirectAttributes.addFlashAttribute("toastError", e.getLocalizedMessage());
+            return "redirect:/students";
+        }
+
+        redirectAttributes.addFlashAttribute("toastMessage", "Student successfully deleted!");
         return "redirect:/students";
     }
 }

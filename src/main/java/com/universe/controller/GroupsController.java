@@ -34,6 +34,14 @@ public class GroupsController {
         return "groups/groups-list";
     }
 
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @GetMapping(path = "/{id}/view")
+    public String getGroupViewPage(Model model, @PathVariable("id") Long id) {
+        var group = groupService.findOne(id);
+        model.addAttribute("group", group);
+        return "groups/view-group";
+    }
+
 
     @PreAuthorize(HAS_WRITE_PERMISSION)
     @GetMapping(value = "/new")
@@ -75,8 +83,6 @@ public class GroupsController {
     public String getEditGroupPage(Model model, @PathVariable("id") Long id) {
         var group = groupService.findOne(id);
         var editGroupForm = GroupMapper.INSTANCE.mapToEditForm(group);
-
-        model.addAttribute("students", studentService.findAll());
 
         if (!model.containsAttribute("group")) {
             model.addAttribute("group", editGroupForm);

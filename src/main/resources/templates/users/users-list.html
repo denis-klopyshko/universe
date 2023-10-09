@@ -33,7 +33,12 @@
             <tr th:each="user : ${users}" data-test="student-item-row">
                 <th scope="row" th:text="${user.id}"></th>
                 <td th:text="${user.firstName} + ' ' + ${user.lastName}" class="text-overflow-ellipsis"></td>
-                <td th:text="${user.group?.name}"></td>
+                <td>
+                    <a th:unless="${user.group == null}"
+                       th:href="@{/groups/{id}/view(id=${user.group.id})}"
+                       th:text="${user.group.name}"
+                    ></a>
+                </td>
                 <td th:text="${user.email}" class="text-overflow-ellipsis"></td>
                 <td th:text="${#strings.listJoin(user.courses.![name], ', ')}"
                     th:title="${#strings.listJoin(user.courses.![name], ', ')}"
