@@ -30,6 +30,7 @@ import java.util.stream.IntStream;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/students")
 public class StudentsController {
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int DEFAULT_PAGE = 1;
@@ -41,7 +42,7 @@ public class StudentsController {
     private final GroupRepository groupRepo;
 
     @PreAuthorize("hasAnyAuthority('students::read', 'students::write')")
-    @RequestMapping(value = "/students", method = RequestMethod.GET)
+    @GetMapping("/")
     public String getStudentsList(Model model,
                                   @RequestParam("page") Optional<Integer> page,
                                   @RequestParam("size") Optional<Integer> size) {
@@ -65,7 +66,7 @@ public class StudentsController {
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
-    @RequestMapping(value = "/students/new", method = RequestMethod.GET)
+    @GetMapping("/new")
     public String getCreateStudentPage(Model model) {
         var studentForm = new CreateUserForm();
         model.addAttribute("roles", roleRepo.findAllRoleNames());
@@ -82,7 +83,7 @@ public class StudentsController {
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
-    @RequestMapping(value = "/students", method = RequestMethod.POST)
+    @PostMapping("/")
     public String createStudent(@Valid @ModelAttribute("student") CreateUserForm student,
                                 BindingResult result,
                                 RedirectAttributes redirectAttributes) {
@@ -105,7 +106,7 @@ public class StudentsController {
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
-    @RequestMapping(value = "/students/{id}/edit", method = RequestMethod.GET)
+    @GetMapping("/{id}/edit")
     public String getUpdateStudentPage(Model model, @PathVariable("id") Long id) {
         var student = userService.findOne(id);
         var updateStudentForm = student.toUpdateForm();
@@ -122,7 +123,7 @@ public class StudentsController {
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
-    @RequestMapping(value = "/students/{id}/edit", method = RequestMethod.POST)
+    @PostMapping("/{id}/edit")
     public String updateStudent(@PathVariable("id") Long id,
                                 @Valid @ModelAttribute("student") UpdateUserForm student,
                                 BindingResult result,
@@ -146,7 +147,7 @@ public class StudentsController {
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
-    @RequestMapping(value = "/students/{id}/delete", method = RequestMethod.GET)
+    @GetMapping("/{id}/delete")
     public String deleteStudent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             userService.delete(id);
