@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head th:replace="index :: head('View Group')"></head>
+<body>
+<div class="container-fluid bg-secondary-subtle pb-4 min-vh-100">
+    <header th:replace="fragments/header :: header"></header>
+
+    <section>
+        <div class="container-lg">
+            <div class="row justify-content-center overflow-hidden" style="height: 100vh;">
+                <div class="mx-auto col-10 col-md-8 col-lg-6">
+                    <h1 class="mb-3 mt-3">View Group</h1>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="group-name" class="form-label">Group Name</label>
+                            <input class="form-control" id ="group-name" type="text" th:value="${group.name}" aria-label="readonly input example" readonly>
+                        </div>
+                    </div>
+
+                    <div id="students_view" class="mb-3 row" th:unless="${group.students.empty}">
+                        <div class="col">
+                            <label for="students" class="form-label">Assigned Students</label>
+                            <table class="table" data-test="students-table" id="students">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Full Name</th>
+                                    <th scope="col">Email</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="student : ${group.students}" data-test="student-item-row">
+                                    <td th:text="${student.getFullName()}"></td>
+                                    <td th:text="${student.email}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer th:replace="fragments/footer :: footer"></footer>
+</div>
+<script th:replace="index :: required-scripts"></script>
+</body>
+</html>

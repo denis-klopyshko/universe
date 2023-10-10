@@ -64,7 +64,6 @@ public class StudentsControllerWebMvcTest {
 
         mockMvc.perform(get("/students"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "students/students-list"))
                 .andExpect(model().attributeExists("students"))
                 .andExpect(content().string(containsString("John Doe")))
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
@@ -130,7 +129,6 @@ public class StudentsControllerWebMvcTest {
 
         mockMvc.perform(get("/students/1/edit"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "students/edit-student"))
                 .andExpect(model().attribute("roles", List.of("ROLE_STUDENT", "ROLE_PROFESSOR")))
                 .andExpect(model().attribute("userType", UserType.STUDENT))
                 .andExpect(content().string(containsString("Edit Student")))

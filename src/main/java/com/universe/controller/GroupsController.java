@@ -4,7 +4,6 @@ import com.universe.dto.group.CreateGroupForm;
 import com.universe.dto.group.EditGroupForm;
 import com.universe.mapping.GroupMapper;
 import com.universe.service.GroupService;
-import com.universe.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,13 +24,20 @@ public class GroupsController {
     private static final String HAS_WRITE_PERMISSION = "hasAnyAuthority('groups::write')";
 
     private final GroupService groupService;
-    private final StudentService studentService;
 
     @PreAuthorize(HAS_READ_PERMISSION)
     @GetMapping
     public String getGroupsListPage(Model model) {
         model.addAttribute("groups", groupService.findAll());
         return "groups/groups-list";
+    }
+
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @GetMapping(path = "/{id}/view")
+    public String getGroupViewPage(Model model, @PathVariable("id") Long id) {
+        var group = groupService.findOne(id);
+        model.addAttribute("group", group);
+        return "groups/view-group";
     }
 
 
@@ -75,8 +81,6 @@ public class GroupsController {
     public String getEditGroupPage(Model model, @PathVariable("id") Long id) {
         var group = groupService.findOne(id);
         var editGroupForm = GroupMapper.INSTANCE.mapToEditForm(group);
-
-        model.addAttribute("students", studentService.findAll());
 
         if (!model.containsAttribute("group")) {
             model.addAttribute("group", editGroupForm);

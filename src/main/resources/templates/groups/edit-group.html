@@ -17,28 +17,30 @@
                           data-test="edit-group-form">
                         <div class="row mb-3">
                             <div class="col">
-                                <div th:replace="fragments/user-inputs :: textInput(field='name', placeholder='Group Name', required=true)"></div>
+                                <label for="group-name" class="form-label">Group Name</label>
+                                <div id="group-name" th:replace="fragments/user-inputs :: textInput(field='name', placeholder='Group Name', required=true)"></div>
                             </div>
                         </div>
 
-<!--                        <div id="students_control" class="mb-3 row">-->
-<!--                            <div class="col">-->
-<!--                                <label for="studentsEmails">Students</label>-->
-<!--                                <select class="form-select" id="studentsEmails" size="5"-->
-<!--                                        name="studentsEmails"-->
-<!--                                        th:classappend="${#fields.hasErrors('studentsEmails')} ? 'is-invalid'"-->
-<!--                                        multiple="multiple">-->
-<!--                                    <option th:each="student : ${students}"-->
-<!--                                            th:value="${student.email}"-->
-<!--                                            th:text="${student.firstName} + ' ' + ${student.lastName} + ' - (' + ${student.email} + ')'"-->
-<!--                                            th:selected="${#lists.contains(course.studentsEmails, student.email)}"-->
-<!--                                    />-->
-<!--                                </select>-->
-<!--                                <div th:if="${#fields.hasErrors('studentsEmails')}"-->
-<!--                                     th:text="${#fields.errors('studentsEmails')}"-->
-<!--                                     class="invalid-feedback"/>-->
-<!--                            </div>-->
-<!--                        </div>-->
+                        <div id="students_view" class="mb-3 row" th:unless="*{students.empty}">
+                            <div class="col">
+                                <label for="students" class="form-label">Assigned Students (readonly)</label>
+                                <table class="table" data-test="students-table" id="students">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Full Name</th>
+                                        <th scope="col">Email</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="student : *{students}" data-test="student-item-row">
+                                        <td th:text="${student.getFullName()}"></td>
+                                        <td th:text="${student.email}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
                         <div class="row mt-4">
                             <div class="col text-end">

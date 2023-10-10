@@ -11,13 +11,12 @@
                 <div class="col-sm-10 align-middle">
                     <h2>Courses</h2>
                 </div>
-                <div class="col-sm-2 text-center align-self-center" sec:authorize="hasAnyAuthority('courses::write')">
-                    <a th:href="@{/courses/new}" class="btn btn-secondary btn-success" tabindex="-1" role="button">Add
-                        Course</a>
+                <div class="col-sm-2" sec:authorize="hasAnyAuthority('courses::write')">
+                    <div th:replace="fragments/buttons :: primaryButton('Add Course', '/courses/new')"></div>
                 </div>
             </div>
-            <h3 th:if="${courses.empty}" class="text-center">List is Empty</h3>
-            <table class="table" th:unless="${courses.empty}" data-test="courses-table">
+            <h3 th:if="${#lists.isEmpty(courses)}" class="text-center">List is Empty</h3>
+            <table class="table" th:unless="${#lists.isEmpty(courses)}" data-test="courses-table">
                 <thead>
                 <tr>
                     <th scope="col" style="width: 5%">ID</th>

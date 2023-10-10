@@ -30,6 +30,7 @@ import java.util.stream.IntStream;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/students")
 public class StudentsController {
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int DEFAULT_PAGE = 1;
@@ -41,7 +42,7 @@ public class StudentsController {
     private final GroupRepository groupRepo;
 
     @PreAuthorize("hasAnyAuthority('students::read', 'students::write')")
-    @RequestMapping(value = "/students", method = RequestMethod.GET)
+    @GetMapping("/")
     public String getStudentsList(Model model,
                                   @RequestParam("page") Optional<Integer> page,
                                   @RequestParam("size") Optional<Integer> size) {
@@ -52,7 +53,6 @@ public class StudentsController {
                 PageRequest.of(currentPage - 1, pageSize, Sort.by(Sort.Direction.ASC, "id"))
         );
         model.addAttribute("students", studentsPage);
-        model.addAttribute("content", "students/students-list");
 
         int totalPages = studentsPage.getTotalPages();
         if (totalPages > 0) {
@@ -62,11 +62,11 @@ public class StudentsController {
             model.addAttribute("pageNumbers", pageNumbers);
         }
 
-        return "index";
+        return "students/students-list";
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
-    @RequestMapping(value = "/students/new", method = RequestMethod.GET)
+    @GetMapping("/new")
     public String getCreateStudentPage(Model model) {
         var studentForm = new CreateUserForm();
         model.addAttribute("roles", roleRepo.findAllRoleNames());
@@ -79,11 +79,11 @@ public class StudentsController {
             model.addAttribute("student", studentForm);
         }
 
-        return "index";
+        return "students/create-student";
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
-    @RequestMapping(value = "/students", method = RequestMethod.POST)
+    @PostMapping("/")
     public String createStudent(@Valid @ModelAttribute("student") CreateUserForm student,
                                 BindingResult result,
                                 RedirectAttributes redirectAttributes) {
@@ -96,7 +96,7 @@ public class StudentsController {
         try {
             userService.create(student);
         } catch (Exception e) {
-            log.error("Error saving student: " + e.getLocalizedMessage());
+            log.error("Error saving student: [{}]", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("student", student);
             return "redirect:/students/new";
@@ -106,7 +106,7 @@ public class StudentsController {
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
-    @RequestMapping(value = "/students/{id}/edit", method = RequestMethod.GET)
+    @GetMapping("/{id}/edit")
     public String getUpdateStudentPage(Model model, @PathVariable("id") Long id) {
         var student = userService.findOne(id);
         var updateStudentForm = student.toUpdateForm();
@@ -114,17 +114,16 @@ public class StudentsController {
         model.addAttribute("courses", courseRepo.findAllCourseNames());
         model.addAttribute("userType", UserType.STUDENT);
         model.addAttribute("groups", groupRepo.findAllGroupNames());
-        model.addAttribute("content", "students/edit-student");
 
         if (!model.containsAttribute("student")) {
             model.addAttribute("student", updateStudentForm);
         }
 
-        return "index";
+        return "students/edit-student";
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
-    @RequestMapping(value = "/students/{id}/edit", method = RequestMethod.POST)
+    @PostMapping("/{id}/edit")
     public String updateStudent(@PathVariable("id") Long id,
                                 @Valid @ModelAttribute("student") UpdateUserForm student,
                                 BindingResult result,
@@ -138,7 +137,7 @@ public class StudentsController {
         try {
             userService.update(id, student);
         } catch (Exception e) {
-            log.error("Error updating student" + e.getLocalizedMessage());
+            log.error("Error updating student: [{}]", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("student", student);
             return "redirect:/students/{id}/edit";
@@ -148,9 +147,17 @@ public class StudentsController {
     }
 
     @PreAuthorize("hasAnyAuthority('students::write')")
-    @RequestMapping(value = "/students/{id}/delete", method = RequestMethod.GET)
-    public String deleteStudent(@PathVariable Long id) {
-        userService.delete(id);
+    @GetMapping("/{id}/delete")
+    public String deleteStudent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.delete(id);
+        } catch (Exception e) {
+            log.error("Error deleting student: [{}]", e.getLocalizedMessage());
+            redirectAttributes.addFlashAttribute("toastError", e.getLocalizedMessage());
+            return "redirect:/students";
+        }
+
+        redirectAttributes.addFlashAttribute("toastMessage", "Student successfully deleted!");
         return "redirect:/students";
     }
 }
