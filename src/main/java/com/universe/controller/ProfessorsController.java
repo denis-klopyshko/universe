@@ -3,22 +3,17 @@ package com.universe.controller;
 import com.universe.dto.user.CreateUserForm;
 import com.universe.dto.user.UpdateUserForm;
 import com.universe.enums.UserType;
+import com.universe.repository.CourseRepository;
 import com.universe.repository.RoleRepository;
 import com.universe.service.ProfessorService;
 import com.universe.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -26,38 +21,41 @@ import javax.validation.Valid;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/professors")
 public class ProfessorsController {
+    private static final String HAS_READ_PERMISSION = "hasAnyAuthority('professors::write', 'professors::read', 'users::write', 'users::read')";
+    private static final String HAS_WRITE_PERMISSION = "hasAnyAuthority('professors::write', 'users::write')";
+
     private final ProfessorService professorService;
     private final UserService userService;
     private final RoleRepository roleRepo;
-    // private final CourseRepository courseRepo;
+    private final CourseRepository courseRepo;
 
-    @RequestMapping(value = "/professors", method = RequestMethod.GET)
+    @PreAuthorize(HAS_READ_PERMISSION)
+    @GetMapping
     public String getList(Model model) {
-        Pageable page = PageRequest.of(0, 20, Sort.by("id").ascending());
-        model.addAttribute("content", "professors/professors-list");
-        model.addAttribute("professors", professorService.findAll(page).getContent());
-        return "index";
+        model.addAttribute("professors", professorService.findAll());
+        return "professors/professors-list";
     }
 
-    @PreAuthorize("hasAnyAuthority('professors::write')")
-    @RequestMapping(value = "/professors/new", method = RequestMethod.GET)
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @GetMapping("/new")
     public String getCreateProfessorPage(Model model) {
         var professorForm = new CreateUserForm();
+        System.out.println(professorForm);
         model.addAttribute("roles", roleRepo.findAllRoleNames());
-        //model.addAttribute("courses", courseRepo.findAllCourseNames());
+        model.addAttribute("courses", courseRepo.findAllCourseNames());
         model.addAttribute("userType", UserType.PROFESSOR);
-        model.addAttribute("content", "professors/create-professor");
 
         if (!model.containsAttribute("professor")) {
             model.addAttribute("professor", professorForm);
         }
 
-        return "index";
+        return "professors/create-professor";
     }
 
-    @PreAuthorize("hasAnyAuthority('professors::write')")
-    @RequestMapping(value = "/professors", method = RequestMethod.POST)
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @PostMapping
     public String createProfessor(@Valid @ModelAttribute("professor") CreateUserForm professor,
                                   BindingResult result,
                                   RedirectAttributes redirectAttributes) {
@@ -70,7 +68,7 @@ public class ProfessorsController {
         try {
             userService.create(professor);
         } catch (Exception e) {
-            log.error("Error saving professor: " + e.getLocalizedMessage());
+            log.error("Error saving professor: [{}]", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("professor", professor);
             return "redirect:/professors/new";
@@ -79,29 +77,28 @@ public class ProfessorsController {
         return "redirect:/professors";
     }
 
-    @PreAuthorize("hasAnyAuthority('professors::write')")
-    @RequestMapping(value = "/professors/{id}/edit", method = RequestMethod.GET)
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @GetMapping("/{id}/edit")
     public String getUpdateProfessorPage(Model model, @PathVariable("id") Long id) {
         var professor = userService.findOne(id);
         var updateProfessorForm = professor.toUpdateForm();
         model.addAttribute("roles", roleRepo.findAllRoleNames());
-        //model.addAttribute("courses", courseRepo.findAllCourseNames());
+        model.addAttribute("courses", courseRepo.findAllCourseNames());
         model.addAttribute("userType", UserType.PROFESSOR);
-        model.addAttribute("content", "professors/edit-professor");
 
         if (!model.containsAttribute("professor")) {
             model.addAttribute("professor", updateProfessorForm);
         }
 
-        return "index";
+        return "professors/edit-professor";
     }
 
-    @PreAuthorize("hasAnyAuthority('professors::write')")
-    @RequestMapping(value = "/professors/{id}/edit", method = RequestMethod.POST)
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @PostMapping("/{id}/edit")
     public String updateProfessor(@PathVariable("id") Long id,
-                             @Valid @ModelAttribute("professor") UpdateUserForm professor,
-                             BindingResult result,
-                             RedirectAttributes redirectAttributes) {
+                                  @Valid @ModelAttribute("professor") UpdateUserForm professor,
+                                  BindingResult result,
+                                  RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.professor", result);
             redirectAttributes.addFlashAttribute("professor", professor);
@@ -111,7 +108,7 @@ public class ProfessorsController {
         try {
             userService.update(id, professor);
         } catch (Exception e) {
-            log.error("Error updating professor" + e.getLocalizedMessage());
+            log.error("Error updating professor: [{}]", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("professor", professor);
             return "redirect:/professors/{id}/edit";
@@ -120,10 +117,18 @@ public class ProfessorsController {
         return "redirect:/professors";
     }
 
-    @PreAuthorize("hasAnyAuthority('professors::write')")
-    @RequestMapping(value = "/professors/{id}/delete", method = RequestMethod.GET)
-    public String deleteProfessor(@PathVariable Long id) {
-        userService.delete(id);
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @GetMapping("/{id}/delete")
+    public String deleteProfessor(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.delete(id);
+        } catch (Exception e) {
+            log.error("Error deleting professor: [{}]", e.getLocalizedMessage());
+            redirectAttributes.addFlashAttribute("toastError", e.getLocalizedMessage());
+            return "redirect:/professors";
+        }
+
+        redirectAttributes.addFlashAttribute("toastMessage", "Professor successfully deleted!");
         return "redirect:/professors";
     }
 }

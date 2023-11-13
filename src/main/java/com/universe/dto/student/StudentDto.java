@@ -39,6 +39,8 @@ public class StudentDto {
     @Valid
     private GroupShortDto group;
 
+    private boolean enabled;
+
     @Builder.Default
     private List<@NotNull CourseShortDto> courses = new ArrayList<>();
 

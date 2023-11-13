@@ -3,7 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head th:replace="index :: head('Students')"></head>
 <body>
-<div class="container-fluid bg-secondary-subtle pb-4 min-vh-100">
+<div class="container-fluid pb-4 min-vh-100">
     <header th:replace="fragments/header :: header"></header>
     <section>
         <div class="container">
@@ -15,8 +15,8 @@
                     <div th:replace="fragments/buttons :: primaryButton('Add Student', '/students/new')"></div>
                 </div>
             </div>
-            <h3 th:if="${#lists.isEmpty(students)}" class="text-center">List is Empty</h3>
-            <table class="table table-bordered table-fixed" th:unless="${#lists.isEmpty(students)}"
+            <h3 th:if="${students.isEmpty()}" class="text-center">List is Empty</h3>
+            <table class="table table-bordered table-fixed" th:unless="${students.isEmpty()}"
                    data-test="students-table">
                 <thead>
                 <tr>
@@ -25,6 +25,7 @@
                     <th scope="col" style="width: 5%">Group</th>
                     <th scope="col" style="width: 20%">Email</th>
                     <th scope="col">Courses</th>
+                    <th scope="col" style="width: 6%">Status</th>
                     <th scope="col" style="width: 10%"
                         sec:authorize="hasAnyAuthority('students::write', 'users::write')">
                         Actions
@@ -44,6 +45,12 @@
                     <td th:text="${student.email}" class="text-overflow-ellipsis"></td>
                     <td th:text="${#strings.listJoin(student.getCourseNames(), ', ')}"
                         class="text-overflow-ellipsis"></td>
+                    <td>
+                            <span class="badge"
+                                  th:text="${student.enabled ? 'Active' : 'Disabled'}"
+                                  th:classappend="${student.enabled ? 'text-bg-success' : 'text-bg-danger'}">
+                            </span>
+                    </td>
                     <td sec:authorize="hasAnyAuthority('students::write', 'users::write')">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a th:href="@{/students/{id}/edit(id=${student.id})}" class="btn btn-primary me-md-2 btn-sm"

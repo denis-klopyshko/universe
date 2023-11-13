@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public interface StudentMapper {
     StudentMapper INSTANCE = Mappers.getMapper(StudentMapper.class);
 
+    @Mapping(target = "enabled", source = "enabled")
     StudentDto mapToDto(StudentEntity studentEntity);
 
     @Mapping(target = "id", ignore = true)

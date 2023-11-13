@@ -32,6 +32,8 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 @RequestMapping("/students")
 public class StudentsController {
+    private static final String HAS_READ_PERMISSION = "hasAnyAuthority('students::write', 'students::read', 'users::write', 'users::read')";
+    private static final String HAS_WRITE_PERMISSION = "hasAnyAuthority('students::write', 'users::write')";
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int DEFAULT_PAGE = 1;
 
@@ -41,8 +43,8 @@ public class StudentsController {
     private final CourseRepository courseRepo;
     private final GroupRepository groupRepo;
 
-    @PreAuthorize("hasAnyAuthority('students::read', 'students::write')")
-    @GetMapping("/")
+    @PreAuthorize(HAS_READ_PERMISSION)
+    @GetMapping
     public String getStudentsList(Model model,
                                   @RequestParam("page") Optional<Integer> page,
                                   @RequestParam("size") Optional<Integer> size) {
@@ -65,7 +67,7 @@ public class StudentsController {
         return "students/students-list";
     }
 
-    @PreAuthorize("hasAnyAuthority('students::write')")
+    @PreAuthorize(HAS_WRITE_PERMISSION)
     @GetMapping("/new")
     public String getCreateStudentPage(Model model) {
         var studentForm = new CreateUserForm();
@@ -73,7 +75,6 @@ public class StudentsController {
         model.addAttribute("courses", courseRepo.findAllCourseNames());
         model.addAttribute("userType", UserType.STUDENT);
         model.addAttribute("groups", groupRepo.findAllGroupNames());
-        model.addAttribute("content", "students/create-student");
 
         if (!model.containsAttribute("student")) {
             model.addAttribute("student", studentForm);
@@ -82,8 +83,8 @@ public class StudentsController {
         return "students/create-student";
     }
 
-    @PreAuthorize("hasAnyAuthority('students::write')")
-    @PostMapping("/")
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @PostMapping
     public String createStudent(@Valid @ModelAttribute("student") CreateUserForm student,
                                 BindingResult result,
                                 RedirectAttributes redirectAttributes) {
@@ -105,7 +106,7 @@ public class StudentsController {
         return "redirect:/students";
     }
 
-    @PreAuthorize("hasAnyAuthority('students::write')")
+    @PreAuthorize(HAS_WRITE_PERMISSION)
     @GetMapping("/{id}/edit")
     public String getUpdateStudentPage(Model model, @PathVariable("id") Long id) {
         var student = userService.findOne(id);
@@ -122,7 +123,7 @@ public class StudentsController {
         return "students/edit-student";
     }
 
-    @PreAuthorize("hasAnyAuthority('students::write')")
+    @PreAuthorize(HAS_WRITE_PERMISSION)
     @PostMapping("/{id}/edit")
     public String updateStudent(@PathVariable("id") Long id,
                                 @Valid @ModelAttribute("student") UpdateUserForm student,
@@ -146,7 +147,7 @@ public class StudentsController {
         return "redirect:/students";
     }
 
-    @PreAuthorize("hasAnyAuthority('students::write')")
+    @PreAuthorize(HAS_WRITE_PERMISSION)
     @GetMapping("/{id}/delete")
     public String deleteStudent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

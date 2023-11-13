@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="index :: head('Edit Student')"></head>
 <body>
-<div class="container-fluid bg-secondary-subtle pb-4 min-vh-100">
+<div class="container-fluid pb-4 min-vh-100">
     <header th:replace="fragments/header :: header"></header>
     <section>
         <div class="container">
@@ -68,8 +68,9 @@
 
                         <div id="courses_control" class="mb-3 row">
                             <div class="col">
-                                <label class="form-label" for="courses_control">Courses</label>
-                                <select th:field="*{courses}" size="5" multiple="multiple" class="form-select"
+                                <label class="form-label" for="courses">Courses</label>
+                                <select th:field="*{courses}" size="5" multiple="multiple"
+                                        id="courses" class="form-select"
                                         th:classappend="${#fields.hasErrors('courses')} ? 'is-invalid'">
                                     <option th:each="course, stat  : ${courses}" th:value="${course}"
                                             th:text="${course}"/>

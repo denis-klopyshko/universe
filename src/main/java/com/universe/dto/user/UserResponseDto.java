@@ -4,12 +4,11 @@ import com.universe.dto.AuthorityDto;
 import com.universe.dto.RoleDto;
 import com.universe.dto.course.CourseShortDto;
 import com.universe.dto.group.GroupShortDto;
-import com.universe.entity.RoleEntity;
+import com.universe.entity.ProfessorEntity;
 import com.universe.entity.StudentEntity;
 import com.universe.entity.UserEntity;
 import com.universe.enums.UserType;
 import com.universe.mapping.CourseShortMapper;
-import com.universe.mapping.RoleMapper;
 import com.universe.mapping.UserMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +16,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,36 +49,30 @@ public class UserResponseDto {
     private List<AuthorityDto> authorities = new ArrayList<>();
 
     public static UserResponseDto fromUser(UserEntity user) {
-        var response = UserMapper.INSTANCE.mapUserResponseBaseAttributes(user);
-        var userRoles = user.getRoles().stream()
-                .map(RoleMapper.INSTANCE::mapToDto)
-                .collect(Collectors.toList());
-        response.setRoles(userRoles);
-        var userType = Optional.ofNullable(user.getUserType())
-                .map(type -> UserType.valueOf(user.getUserType().toUpperCase()))
-                .orElse(UserType.ADMIN);
-        response.setUserType(userType);
+        var userResponseDto = UserMapper.INSTANCE.mapToResponseDto(user);
 
-        var userAuthorities = user.getRoles().stream()
-                .map(RoleEntity::getAuthorities)
-                .flatMap(Collection::stream)
-                .map(authorityEntity -> new AuthorityDto(authorityEntity.getId(), authorityEntity.getName()))
-                .collect(Collectors.toList());
-        response.setAuthorities(userAuthorities);
-
-        if (user.getUserType() != null && user.getUserType().equals(UserType.STUDENT.getValue())) {
+        if (userResponseDto.getUserType().equals(UserType.STUDENT)) {
             var userStudent = (StudentEntity) user;
             Optional.ofNullable(userStudent.getGroup())
                     .map(group -> new GroupShortDto(group.getId(), group.getName()))
-                    .ifPresent(response::setGroup);
+                    .ifPresent(userResponseDto::setGroup);
 
             var userCourses = userStudent.getCourses().stream()
                     .map(CourseShortMapper.INSTANCE::mapToDto)
                     .collect(Collectors.toList());
-            response.setCourses(userCourses);
+            userResponseDto.setCourses(userCourses);
         }
 
-        return response;
+        if (userResponseDto.getUserType().equals(UserType.PROFESSOR)) {
+            var userProfessor = (ProfessorEntity) user;
+
+            var userCourses = userProfessor.getCourses().stream()
+                    .map(CourseShortMapper.INSTANCE::mapToDto)
+                    .collect(Collectors.toList());
+            userResponseDto.setCourses(userCourses);
+        }
+
+        return userResponseDto;
     }
 
     public UpdateUserForm toUpdateForm() {

@@ -1,48 +1,65 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>Professors</title>
-</head>
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+<head th:replace="index :: head('Professors')"></head>
 <body>
-<div th:fragment="content" class="container">
-    <div class="row text-left mt-5 mb-5">
-        <div class="col-sm-10 align-middle">
-            <h2>Professors</h2>
-        </div>
-        <div sec:authorize="hasAnyAuthority('professors::write', 'users::write')" class="col-sm-2" data-test="add-professor-btn">
-            <div th:replace="fragments/buttons :: primaryButton('Add Professor', '/professors/new')"></div>
-        </div>
-    </div>
-    <h3 th:if="${professors.empty}" class="text-center">List is Empty</h3>
-    <table class="table table-bordered table-fixed" th:unless="${professors.empty}" data-test="professors-table">
-        <thead>
-        <tr>
-            <th scope="col" style="width: 5%">ID</th>
-            <th scope="col">Full Name</th>
-            <th scope="col">Email</th>
-            <th scope="col" style="width: 10%" sec:authorize="hasAnyAuthority('professors::write')">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="professor : ${professors}" data-test="professor-item-row">
-            <th scope="row" th:text="${professor.id}"></th>
-            <td th:text="${professor.firstName} + ' ' + ${professor.lastName}"></td>
-            <td th:text="${professor.email}"></td>
-            <td sec:authorize="hasAnyAuthority('professors::write')">
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <a th:href="@{/professors/{id}/edit(id=${professor.id})}" class="btn btn-primary me-md-2 btn-sm"
-                       tabindex="-1"
-                       role="button">Edit</a>
-                    <a th:href="@{/professors/{id}/delete(id=${professor.id})}" class="btn btn-primary btn-sm"
-                       tabindex="-1"
-                       role="button">Delete</a>
+<div class="container-fluid pb-4 min-vh-100">
+    <header th:replace="fragments/header :: header"></header>
+    <section>
+        <div class="container">
+            <div class="row text-left mt-5 mb-5">
+                <div class="col-sm-10 align-middle">
+                    <h2>Professors</h2>
                 </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                <div sec:authorize="hasAnyAuthority('professors::write', 'users::write')" class="col-sm-2"
+                     data-test="add-professor-btn">
+                    <div th:replace="fragments/buttons :: primaryButton('Add Professor', '/professors/new')"></div>
+                </div>
+            </div>
+            <h3 th:if="${professors.isEmpty()}" class="text-center">List is Empty</h3>
+            <table class="table table-bordered table-fixed" th:unless="${professors.isEmpty()}"
+                   data-test="professors-table">
+                <thead>
+                <tr>
+                    <th scope="col" style="width: 5%">ID</th>
+                    <th scope="col">Full Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Courses</th>
+                    <th scope="col" style="width: 7%">Status</th>
+                    <th scope="col" style="width: 10%" sec:authorize="hasAnyAuthority('professors::write')">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="professor : ${professors}" data-test="professor-item-row">
+                    <th scope="row" th:text="${professor.id}"></th>
+                    <td th:text="${professor.firstName + ' ' + professor.lastName}"></td>
+                    <td th:text="${professor.email}" class="text-overflow-ellipsis"></td>
+                    <td th:text="${#strings.listJoin(professor.getCourseNames(), ', ')}"
+                        class="text-overflow-ellipsis"></td>
+                    <td>
+                        <span class="badge"
+                              th:text="${professor.enabled ? 'Active' : 'Disabled'}"
+                              th:classappend="${professor.enabled ? 'text-bg-success' : 'text-bg-danger'}">
+                        </span>
+                    </td>
+                    <td sec:authorize="hasAnyAuthority('professors::write')">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a th:href="@{/professors/{id}/edit(id=${professor.id})}"
+                               class="btn btn-primary me-md-2 btn-sm"
+                               tabindex="-1"
+                               role="button">Edit</a>
+                            <a th:href="@{/professors/{id}/delete(id=${professor.id})}" class="btn btn-primary btn-sm"
+                               tabindex="-1"
+                               role="button">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <footer th:replace="fragments/footer :: footer"></footer>
 </div>
+<script th:replace="index :: required-scripts"></script>
 </body>
 </html>

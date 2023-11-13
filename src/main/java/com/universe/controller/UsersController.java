@@ -29,7 +29,10 @@ import java.util.stream.IntStream;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/users")
 public class UsersController {
+    private static final String HAS_READ_PERMISSION = "hasAnyAuthority('users::write', 'users::read')";
+    private static final String HAS_WRITE_PERMISSION = "hasAnyAuthority('users::write')";
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int DEFAULT_PAGE = 1;
 
@@ -38,8 +41,8 @@ public class UsersController {
     private final CourseRepository courseRepo;
     private final GroupRepository groupRepo;
 
-    @PreAuthorize("hasAnyAuthority('users::write')")
-    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    @PreAuthorize(HAS_READ_PERMISSION)
+    @GetMapping
     public String getUsersList(Model model,
                                @RequestParam("page") Optional<Integer> page,
                                @RequestParam("size") Optional<Integer> size) {
@@ -50,7 +53,6 @@ public class UsersController {
                 PageRequest.of(currentPage - 1, pageSize, Sort.by(Sort.Direction.ASC, "id"))
         );
         model.addAttribute("users", usersPage);
-        model.addAttribute("content", "users/users-list");
 
         int totalPages = usersPage.getTotalPages();
         if (totalPages > 0) {
@@ -60,42 +62,41 @@ public class UsersController {
             model.addAttribute("pageNumbers", pageNumbers);
         }
 
-        return "index";
+        return "users/users-list";
     }
 
-    @PreAuthorize("hasAnyAuthority('users::write')")
-    @RequestMapping(value = "/users/{id}/delete", method = RequestMethod.GET)
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @GetMapping("/{id}/delete")
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             userService.delete(id);
             redirectAttributes.addFlashAttribute("toastMessage", "User successfully deleted!");
             return "redirect:/users";
         } catch (Exception e) {
-            log.error("Error deleting user: [{}]",  e.getLocalizedMessage());
+            log.error("Error deleting user: [{}]", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("toastError", e.getLocalizedMessage());
             return "redirect:/users";
         }
     }
 
-    @PreAuthorize("hasAnyAuthority('users::write')")
-    @RequestMapping(value = "/users/new", method = RequestMethod.GET)
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @GetMapping("/new")
     public String getCreateUserPage(Model model) {
         var createUserRequest = new CreateUserForm();
         model.addAttribute("roles", roleRepo.findAllRoleNames());
         model.addAttribute("courses", courseRepo.findAllCourseNames());
         model.addAttribute("userTypes", UserType.getValues());
         model.addAttribute("groups", groupRepo.findAllGroupNames());
-        model.addAttribute("content", "users/create-user");
 
         if (!model.containsAttribute("user")) {
             model.addAttribute("user", createUserRequest);
         }
 
-        return "index";
+        return "users/create-user";
     }
 
-    @PreAuthorize("hasAnyAuthority('users::write')")
-    @RequestMapping(value = "/users", method = RequestMethod.POST)
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @PostMapping
     public String createUser(@Valid @ModelAttribute("user") CreateUserForm user,
                              BindingResult result,
                              RedirectAttributes redirectAttributes) {
@@ -108,7 +109,7 @@ public class UsersController {
         try {
             userService.create(user);
         } catch (Exception e) {
-            log.error("Error saving user: [{}]",  e.getLocalizedMessage());
+            log.error("Error saving user: [{}]", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("user", user);
             return "redirect:/users/new";
@@ -117,8 +118,8 @@ public class UsersController {
         return "redirect:/users";
     }
 
-    @PreAuthorize("hasAnyAuthority('users::write')")
-    @RequestMapping(value = "/users/{id}/edit", method = RequestMethod.GET)
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @GetMapping("/{id}/edit")
     public String getUpdateUserPage(Model model, @PathVariable("id") Long id) {
         var user = userService.findOne(id);
         var updateUserRequest = user.toUpdateForm();
@@ -126,17 +127,16 @@ public class UsersController {
         model.addAttribute("courses", courseRepo.findAllCourseNames());
         model.addAttribute("userTypes", UserType.getValues());
         model.addAttribute("groups", groupRepo.findAllGroupNames());
-        model.addAttribute("content", "users/edit-user");
 
         if (!model.containsAttribute("user")) {
             model.addAttribute("user", updateUserRequest);
         }
 
-        return "index";
+        return "users/edit-user";
     }
 
-    @PreAuthorize("hasAnyAuthority('users::write')")
-    @RequestMapping(value = "/users/{id}/edit", method = RequestMethod.POST)
+    @PreAuthorize(HAS_WRITE_PERMISSION)
+    @PostMapping("/{id}/edit")
     public String updateUser(@PathVariable("id") Long id,
                              @Valid @ModelAttribute("user") UpdateUserForm user,
                              BindingResult result,
@@ -150,7 +150,7 @@ public class UsersController {
         try {
             userService.update(id, user);
         } catch (Exception e) {
-            log.error("Error updating user: [{}]",  e.getLocalizedMessage());
+            log.error("Error updating user: [{}]", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("errorMessage", e.getLocalizedMessage());
             redirectAttributes.addFlashAttribute("user", user);
             return "redirect:/users/{id}/edit";
