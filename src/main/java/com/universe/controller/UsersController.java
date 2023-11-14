@@ -33,7 +33,7 @@ import java.util.stream.IntStream;
 public class UsersController {
     private static final String HAS_READ_PERMISSION = "hasAnyAuthority('users::write', 'users::read')";
     private static final String HAS_WRITE_PERMISSION = "hasAnyAuthority('users::write')";
-    private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final int DEFAULT_PAGE_SIZE = 10;
     private static final int DEFAULT_PAGE = 1;
 
     private final UserService userService;

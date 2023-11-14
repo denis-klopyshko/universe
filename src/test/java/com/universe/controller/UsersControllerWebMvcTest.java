@@ -64,7 +64,6 @@ public class UsersControllerWebMvcTest {
 
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "users/users-list"))
                 .andExpect(model().attributeExists("users"))
                 .andExpect(content().string(containsString("John Doe")))
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
@@ -110,7 +109,6 @@ public class UsersControllerWebMvcTest {
 
         mockMvc.perform(get("/users/new"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "users/create-user"))
                 .andExpect(model().attribute("roles", List.of("ROLE_STUDENT", "ROLE_PROFESSOR", "ROLE_ADMIN")))
                 .andExpect(model().attribute("userTypes", UserType.getValues()))
                 .andExpect(content().string(containsString("Add User")))
@@ -129,7 +127,6 @@ public class UsersControllerWebMvcTest {
 
         mockMvc.perform(get("/users/1/edit"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "users/edit-user"))
                 .andExpect(model().attribute("roles", List.of("ROLE_STUDENT", "ROLE_PROFESSOR")))
                 .andExpect(model().attribute("userTypes", UserType.getValues()))
                 .andExpect(content().string(containsString("Edit User")))

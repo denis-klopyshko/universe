@@ -1,5 +1,6 @@
 package com.universe.controller;
 
+import com.universe.dto.professor.ProfessorDto;
 import com.universe.dto.user.CreateUserForm;
 import com.universe.dto.user.UpdateUserForm;
 import com.universe.enums.UserType;
@@ -9,6 +10,9 @@ import com.universe.service.ProfessorService;
 import com.universe.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 @Slf4j
@@ -30,11 +38,30 @@ public class ProfessorsController {
     private final UserService userService;
     private final RoleRepository roleRepo;
     private final CourseRepository courseRepo;
+    private static final int DEFAULT_PAGE_SIZE = 10;
+    private static final int DEFAULT_PAGE = 1;
 
     @PreAuthorize(HAS_READ_PERMISSION)
     @GetMapping
-    public String getList(Model model) {
-        model.addAttribute("professors", professorService.findAll());
+    public String getList(Model model,
+                          @RequestParam("page") Optional<Integer> page,
+                          @RequestParam("size") Optional<Integer> size) {
+        int currentPage = page.orElse(DEFAULT_PAGE);
+        int pageSize = size.orElse(DEFAULT_PAGE_SIZE);
+
+        Page<ProfessorDto> professors = professorService.findAll(
+                PageRequest.of(currentPage - 1, pageSize, Sort.by(Sort.Direction.ASC, "id"))
+        );
+        model.addAttribute("professors", professors);
+
+        int totalPages = professors.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+
         return "professors/professors-list";
     }
 

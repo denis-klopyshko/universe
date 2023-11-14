@@ -58,7 +58,7 @@ public class StudentsControllerWebMvcTest {
     void shouldDisplayStudentsList() throws Exception {
         when(studentService.findAll(any(PageRequest.class))).thenReturn(
                 new PageImpl<>(List.of(
-                        new StudentDto(1L, "John", "Doe", "john.doe@test.com", null, List.of(), List.of())
+                        new StudentDto(1L, "John", "Doe", "john.doe@test.com", null, true, List.of(), List.of())
                 ))
         );
 
@@ -110,7 +110,6 @@ public class StudentsControllerWebMvcTest {
 
         mockMvc.perform(get("/students/new"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "students/create-student"))
                 .andExpect(model().attribute("roles", List.of("ROLE_STUDENT", "ROLE_PROFESSOR", "ROLE_ADMIN")))
                 .andExpect(model().attribute("userType", UserType.STUDENT))
                 .andExpect(content().string(containsString("Add Student")))

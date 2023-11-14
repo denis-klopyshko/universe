@@ -56,6 +56,16 @@
                 </tr>
                 </tbody>
             </table>
+            <nav aria-label="pagination">
+                <ul class="pagination pagination-sm justify-content-end" th:if="${professors.totalPages > 0}">
+                    <li th:classappend="${pageNumber == professors.number + 1} ? active" class="page-item"
+                        aria-current="page" th:each="pageNumber : ${pageNumbers}">
+                        <a th:href="@{/professors(size=${professors.size}, page=${pageNumber})}"
+                           th:text="${pageNumber}"
+                           class="page-link"></a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </section>
     <footer th:replace="fragments/footer :: footer"></footer>

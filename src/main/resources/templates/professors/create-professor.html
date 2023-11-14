@@ -51,7 +51,7 @@
                             <label for="courses">Courses</label>
                             <select th:field="*{courses}"
                                     size="5"
-                                    multiple
+                                    multiple="multiple"
                                     class="form-select"
                                     id="courses">
                                 <option th:each="course : ${courses}" th:value="${course}"

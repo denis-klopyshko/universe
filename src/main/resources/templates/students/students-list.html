@@ -64,19 +64,16 @@
                 </tr>
                 </tbody>
             </table>
-            <div class="d-flex flex-row mb-1 justify-content-end">
-                <nav aria-label="pagination">
-                    <ul class="pagination pagination-sm" th:if="${students.totalPages > 0}"
-                        th:each="pageNumber : ${pageNumbers}">
-                        <li th:classappend="${pageNumber == students.number + 1} ? active"
-                            class="page-item" aria-current="page">
-                            <a th:href="@{/templates/students(size=${students.size}, page=${pageNumber})}"
-                               th:text="${pageNumber}"
-                               class="page-link"></a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+            <nav aria-label="pagination">
+                <ul class="pagination pagination-sm justify-content-end" th:if="${students.totalPages > 0}">
+                    <li th:classappend="${pageNumber == students.number + 1} ? active" class="page-item"
+                        aria-current="page" th:each="pageNumber : ${pageNumbers}">
+                        <a th:href="@{/students(size=${students.size}, page=${pageNumber})}"
+                           th:text="${pageNumber}"
+                           class="page-link"></a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </section>
     <footer th:replace="fragments/footer :: footer"></footer>

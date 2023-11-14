@@ -15,6 +15,7 @@ class ProfessorDtoMapperTest {
                 .id(1L)
                 .firstName("John")
                 .lastName("Snow")
+                .enabled(true)
                 .build();
 
         ProfessorDto professorDto = MAPPER.mapToDto(professorEntity);
