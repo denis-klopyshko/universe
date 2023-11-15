@@ -11,6 +11,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -31,6 +33,9 @@ public class ProfessorDto {
     @NotNull
     private String email;
 
+    @NotNull
+    private boolean enabled;
+
     @Builder.Default
     @NotEmpty
     private List<@NotNull @Valid CourseShortDto> courses = new ArrayList<>();
@@ -38,4 +43,11 @@ public class ProfessorDto {
     @Builder.Default
     @NotEmpty
     private List<@NotNull @Valid RoleDto> roles = new ArrayList<>();
+
+    public Set<String> getCourseNames() {
+        return this.getCourses()
+                .stream()
+                .map(CourseShortDto::getName)
+                .collect(Collectors.toSet());
+    }
 }

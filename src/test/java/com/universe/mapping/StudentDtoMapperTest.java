@@ -25,6 +25,7 @@ class StudentDtoMapperTest {
                 .group(group)
                 .firstName("John")
                 .lastName("Snow")
+                .enabled(true)
                 .courses(List.of(course))
                 .build();
 

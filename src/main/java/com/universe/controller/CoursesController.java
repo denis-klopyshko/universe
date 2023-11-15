@@ -26,7 +26,7 @@ public class CoursesController {
     private final StudentService studentService;
     private final ProfessorService professorService;
 
-    @PreAuthorize("hasAnyAuthority({'courses::write', 'courses::read'})")
+    @PreAuthorize("hasAnyAuthority('courses::write', 'courses::read')")
     @GetMapping
     public String getCoursesListPage(Model model) {
         model.addAttribute("courses", courseService.findAll());

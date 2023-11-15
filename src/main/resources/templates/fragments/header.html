@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Students</title>
@@ -11,7 +11,7 @@
         <div class="container-lg">
             <a class="navbar-brand" th:href="@{/}">
                 <img th:src="@{/img/logo.png}" alt="Universe Logo" class="d-inline-block align-text-top" width="40"
-                     height="34"/>
+                     height="34" src=""/>
                 Universe
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -21,11 +21,12 @@
             </button>
             <div class="nav-underline" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link" th:href="@{/users}" sec:authorize="hasAnyAuthority('users::write')">Users</a>
+                    <a class="nav-link" th:href="@{/users}"
+                       sec:authorize="hasAnyAuthority('users::write', 'user::read')">Users</a>
                     <a class="nav-link" th:href="@{/students}"
-                       sec:authorize="hasAnyAuthority('students::write', 'students::read')">Students</a>
+                       sec:authorize="hasAnyAuthority('students::write', 'students::read', 'users::write', 'users::read')">Students</a>
                     <a class="nav-link" th:href="@{/professors}"
-                       sec:authorize="hasAnyAuthority('professors::write', 'professors::read')">Professors</a>
+                       sec:authorize="hasAnyAuthority('professors::write', 'professors::read','users::write', 'users::read')">Professors</a>
                     <a class="nav-link" th:href="@{/lessons}"
                        sec:authorize="hasAnyAuthority('lessons::write', 'lessons::read')">Lessons</a>
                     <a class="nav-link" th:href="@{/courses}"

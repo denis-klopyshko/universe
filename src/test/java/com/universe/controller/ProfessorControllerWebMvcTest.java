@@ -63,7 +63,6 @@ public class ProfessorControllerWebMvcTest {
 
         mockMvc.perform(get("/professors"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "professors/professors-list"))
                 .andExpect(model().attributeExists("professors"))
                 .andExpect(content().string(containsString("John Doe")))
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
@@ -86,9 +85,8 @@ public class ProfessorControllerWebMvcTest {
 
         mockMvc.perform(get("/professors"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "professors/professors-list"))
                 .andExpect(model().attributeExists("professors"))
-                .andExpect(content().string(containsString("John Doe")))
+                .andExpect(content().string(containsString("john.doe@test.com")))
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
                 .andExpect(xpath("//div[@data-test='add-professor-btn']").nodeCount(0));
     }
@@ -127,7 +125,6 @@ public class ProfessorControllerWebMvcTest {
 
         mockMvc.perform(get("/professors/new"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "professors/create-professor"))
                 .andExpect(model().attribute("roles", List.of("ROLE_STUDENT", "ROLE_PROFESSOR")))
                 .andExpect(model().attribute("userType", UserType.PROFESSOR))
                 .andExpect(content().string(containsString("Add Professor")))
@@ -146,7 +143,6 @@ public class ProfessorControllerWebMvcTest {
 
         mockMvc.perform(get("/professors/1/edit"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("content", "professors/edit-professor"))
                 .andExpect(model().attribute("roles", List.of("ROLE_STUDENT", "ROLE_PROFESSOR")))
                 .andExpect(model().attribute("userType", UserType.PROFESSOR))
                 .andExpect(content().string(containsString("Edit Professor")))

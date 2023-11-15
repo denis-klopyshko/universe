@@ -15,6 +15,8 @@ public interface UserService {
 
     Page<UserResponseDto> findAll(Pageable pageable);
 
+    UserResponseDto findByEmail(String email);
+
     UserResponseDto create(@Valid @NotNull CreateUserForm createUserForm);
 
     UserResponseDto update(@NotNull Long id, @Valid @NotNull UpdateUserForm updateUserForm);

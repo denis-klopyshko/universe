@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public interface ProfessorMapper {
     ProfessorMapper INSTANCE = Mappers.getMapper(ProfessorMapper.class);
 
+    @Mapping(target = "enabled", source = "enabled")
     ProfessorDto mapToDto(ProfessorEntity professor);
 
     @Mapping(target = "id", ignore = true)

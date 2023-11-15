@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport"
@@ -9,41 +9,56 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
           rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
           crossorigin="anonymous"/>
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to bottom, lightblue, white);
+        }
+
+        .login-form {
+            width: 500px;
+        }
+    </style>
 </head>
 <body class="bg-secondary-subtle overflow-hidden">
-<div class="container mt-5 justify-content-center">
-    <div class="row justify-content-center" style="height: 100vh;">
-        <div class="mx-auto col-10 col-md-8 col-lg-6">
-            <h1>Please Log In</h1>
-            <div th:if="${#strings.equals(#request.getParameter('error'), 'BadCredentials')}"
-                 class="alert alert-danger" role="alert">
-                Invalid email and/or password!
-            </div>
-            <div th:if="${#strings.equals(#request.getParameter('error'), 'AccountDisabled')}"
-                 class="alert alert-danger" role="alert">
-                Account is disabled. Please, contact your System Administrator!
-            </div>
-            <div th:if="${param.logout}" class="alert alert-success" role="alert">
-                You have been logged out.
-            </div>
-            <form th:action="@{/login}" method="post">
-                <div class="form-floating mb-3">
-                    <input type="email" class="form-control" name="username" id="floatingInput"
-                           placeholder="name@example.com">
-                    <label for="floatingInput">Email address</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="floatingPassword" name="password"
-                           placeholder="Password">
-                    <label for="floatingPassword">Password</label>
-                </div>
-
-                <!-- Submit button -->
-                <input type="submit" value="Log in" class="btn btn-primary btn-block mb-4"/>
-            </form>
+<div class="container mt-5 justify-content-center login-form">
+    <div class="pb-5 pt-5">
+        <img th:src="@{/img/logo.png}" class="rounded mx-auto d-block" alt="Universe Logo" src="" tabindex="-1">
+    </div>
+    <div class="row justify-content-center">
+        <div th:if="${#strings.equals(#request.getParameter('error'), 'BadCredentials')}"
+             class="alert alert-danger" role="alert">
+            Invalid email and/or password!
         </div>
+        <div th:if="${#strings.equals(#request.getParameter('error'), 'AccountDisabled')}"
+             class="alert alert-danger" role="alert">
+            Account is disabled. Please, contact your System Administrator!
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success" role="alert">
+            You have been logged out.
+        </div>
+        <form th:action="@{/login}" method="post">
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" name="username" id="floatingInput"
+                       placeholder="name@example.com">
+                <label for="floatingInput">Email address</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="floatingPassword" name="password"
+                       placeholder="Password">
+                <label for="floatingPassword">Password</label>
+            </div>
+
+            <!-- Submit button -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-success btn-block">Login</button>
+            </div>
+        </form>
     </div>
 </div>
-<footer th:replace="fragments/footer :: footer"></footer>
 </body>
 </html>

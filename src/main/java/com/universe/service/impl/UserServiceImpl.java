@@ -63,6 +63,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponseDto findByEmail(String email) {
+        return userRepo.findByEmail(email)
+                .map(UserResponseDto::fromUser)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(String.format("User with email: %s not found", email))
+                );
+    }
+
+    @Override
     public UserResponseDto create(CreateUserForm createUserForm) {
         validateUserExistsByEmail(createUserForm.getEmail());
         switch (createUserForm.getUserType().getValue()) {
@@ -89,8 +98,14 @@ public class UserServiceImpl implements UserService {
     private UserResponseDto saveAsProfessor(CreateUserForm request) {
         log.info("{} adding new Professor User: {}", SecurityUtils.getCurrentUserLogin(), request);
         var professorEntity = new ProfessorEntity(request.toUserEntity());
+
         professorEntity.setPassword(passwordEncoder.encode(request.getPassword()));
         professorEntity.setEnabled(true);
+
+        if (!request.getCourses().isEmpty()) {
+            courseRepo.findAllByNameIn(request.getCourses())
+                    .forEach(professorEntity::addCourse);
+        }
 
         setRoles(request.getRoles(), professorEntity);
 
@@ -142,7 +157,7 @@ public class UserServiceImpl implements UserService {
 
         if (updateUserRequest.getUserType().equals(UserType.PROFESSOR)) {
             var professorEntity = new ProfessorEntity(user);
-            return UserResponseDto.fromUser(userRepo.save(professorEntity));
+            return updateProfessor(professorEntity, updateUserRequest);
         }
 
         return UserResponseDto.fromUser(userRepo.save(user));
@@ -179,6 +194,32 @@ public class UserServiceImpl implements UserService {
         }
 
         return UserResponseDto.fromUser(userRepo.save(student));
+    }
+
+    private UserResponseDto updateProfessor(ProfessorEntity professor, UpdateUserForm updateRequest) {
+        if (updateRequest.getCourses().isEmpty()) {
+            professor.getCourses().clear();
+        }
+
+        if (!updateRequest.getCourses().isEmpty()) {
+            var currentCourseNames = professor.getAssignedCourseNames();
+            var updatedCoursesNames = updateRequest.getCourses();
+
+            var removedCourses = CollectionUtils.removeAll(currentCourseNames, updatedCoursesNames);
+            var addedCourses = CollectionUtils.removeAll(updatedCoursesNames, currentCourseNames);
+
+            if (isNotEmpty(addedCourses)) {
+                courseRepo.findAllByNameIn(addedCourses)
+                        .forEach(professor::addCourse);
+            }
+
+            if (isNotEmpty(removedCourses)) {
+                courseRepo.findAllByNameIn(removedCourses)
+                        .forEach(professor::removeCourse);
+            }
+        }
+
+        return UserResponseDto.fromUser(userRepo.save(professor));
     }
 
     @Override
